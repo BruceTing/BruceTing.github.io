@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">Springboot开篇 | DuoDuo</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "たくさん";
+  mashiro_option.author_name = "たくさん";
+  mashiro_option.site_url = "https://www.yeahme.cn";
+  mashiro_option.v_appId = "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz";
+  mashiro_option.v_appKey = "mgOpfzbkHYqU92CV4IDlAUHQ";
+  mashiro_option.mathjax = "0";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(1).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(2).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(3).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(4).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(5).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(6).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(7).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(8).jpg.webp".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dim">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="https://www.yeahme.cn">
+          <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>Future is comming!</p>
+<!--
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/BruceTing" target="_blank" class="social-github" title="github">
+                    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/social/github.png">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+-->
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+
+    <div id="page" class="site wrapper">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono"></span>
+            <span class="shironeko">たくさん</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/tech/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          技术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/life/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/thought/">
+                          <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                          随想
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/source/">
+                          <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                          资源
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/reprint/">
+                          <i class="fa fa-book" aria-hidden="true"></i>
+                          转载
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我？
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/atom.xml">
+                          <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                          RSS
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro.jpeg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      Springboot开篇</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">多多</a>
+        </span>
+        <span class="bull">
+        ·</span>
+        2019-10-19<span class="bull">
+        ·</span>
+      <span id="busuanzi_value_page_pv"></span>次阅读</p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <p>我们在学习某一知识之前，总得清楚它是<strong>干什么的（What）</strong>，<strong>怎么干（How）</strong>，<strong>为什么这么干（Why）</strong>，对它发出来自灵魂的三拷问。<br>来看看官网介绍：  </p>
+<h2 id="一、Introducing-Spring-Boot"><a href="#一、Introducing-Spring-Boot" class="headerlink" title="一、Introducing Spring Boot"></a>一、Introducing Spring Boot</h2><pre><code class="springboot">Spring Boot makes it easy to create stand-alone, production-grade Spring-based Applications that you can run. We take an opinionated view of the Spring platform and third-party libraries, so that you can get started with minimum fuss. Most Spring Boot applications need very little Spring configuration.  
+
+You can use Spring Boot to create Java applications that can be started by using java -jar or more traditional war deployments. We also provide a command line tool that runs “spring scripts”.  
+
+Our primary goals are:
+  Provide a radically faster and widely accessible getting-started experience for all Spring development.
+  Be opinionated out of the box but get out of the way quickly as requirements start to diverge from the defaults.
+  Provide a range of non-functional features that are common to large classes of projects (such as embedded servers, security, metrics, health checks, and externalized configuration).
+  Absolutely no code generation and no requirement for XML configuration.  </code></pre>
+<p>明白没？不明白？那我就用我这三级都没过的英语水平简单的翻译下：</p>
+<pre><code class="translate">Spring boot 使得创建以及运行基于单机版或生产级别得spring应用变得很简单。我们提出了spring平台和第三库的观点，使得你可以以最小得代价去开始干你想干得事情。而且对于大部分Spring Boot应用程序仅仅需要很少的配置就可以运行。  
+
+你可以使用Spring Boot去创建Java引用，并且以java -jar或是传统部署war包的方式运行。我们也提供了在命令行以&quot;spring scripts&quot;的方式运行  
+
+我们的重要目标是：  
+  对于所有的Spring开发从根本上提供一个更快速且可广泛地容易访问的入门体验
+  开箱即用
+  给一系列大型项目提供通用的非功能性特性（例如嵌入式服务器、安全性、指标、运行状况检查和外部化配置）
+  绝对的无需代码生成和XML配置</code></pre>
+<p>还没明白？自行Google去吧！！！下面可以不用翻译了。</p>
+<h2 id="二、System-Requirements"><a href="#二、System-Requirements" class="headerlink" title="二、System Requirements"></a>二、System Requirements</h2><p>Spring Boot 2.2.0.RELEASE requires <a href="https://www.java.com" target="_blank" rel="noopener">Java 8</a> and is compatible up to Java 13 (included). <a href="https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/" target="_blank" rel="noopener">Spring Framework 5.2.0.RELEASE</a> or above is also required.</p>
+<p>Explicit build support is provided for the following build tools:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Build Tool</th>
+<th align="center">Version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Maven</td>
+<td align="center">3.3+</td>
+</tr>
+<tr>
+<td align="center">Gradle</td>
+<td align="center">5.x (4.10 is also supported but in a deprecated form)</td>
+</tr>
+</tbody></table>
+<p>Spring Boot supports the following embedded servlet containers:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Name</th>
+<th align="center">Servlet Version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Tomcat 9.0</td>
+<td align="center">4.0</td>
+</tr>
+<tr>
+<td align="center">Jetty 9.4</td>
+<td align="center">3.1</td>
+</tr>
+<tr>
+<td align="center">Undertow 2.0</td>
+<td align="center">4.0</td>
+</tr>
+</tbody></table>
+<p>You can also deploy Spring Boot applications to any Servlet 3.1+ compatible container.</p>
+<h2 id="三、Installing-Spring-Boot"><a href="#三、Installing-Spring-Boot" class="headerlink" title="三、Installing Spring Boot"></a>三、Installing Spring Boot</h2><h3 id="1、Installation-Instructions-for-the-Java-Developer"><a href="#1、Installation-Instructions-for-the-Java-Developer" class="headerlink" title="1、Installation Instructions for the Java Developer"></a>1、Installation Instructions for the Java Developer</h3><p>对于开发者来说的话，主要有下面两种方式：<br><strong>a、Maven Installation</strong><br>使用maven前，需要先配置好<a href="https://maven.apache.org" target="_blank" rel="noopener">maven</a>的环境。典型的说，你的<strong>Maven POM</strong>文件会继承<code>spring-boot-starter-parent</code> project并且会声明一个或者多个starters。<br>一个典型的<code>pom.xml</code>文件：</p>
+<pre><code class="pom.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;myproject&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+
+    &lt;!-- Inherit defaults from Spring Boot --&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;!-- Add typical dependencies for a web application --&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;!-- Package as an executable jar --&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+<p><strong>b、Gradle Installation</strong><br><a href="https://gradle.org" target="_blank" rel="noopener">Gradle</a>没用过，自行看文档吧！</p>
+<h3 id="1、Installing-the-Spring-Boot-CLI"><a href="#1、Installing-the-Spring-Boot-CLI" class="headerlink" title="1、Installing the Spring Boot CLI"></a>1、Installing the Spring Boot CLI</h3><p>The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring. It lets you run Groovy scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.</p>
+<p>You do not need to use the CLI to work with Spring Boot, but it is definitely the quickest way to get a Spring application off the ground.</p>
+<p><code>Spring Boot CLI 是一个命令行工具，在我们使用Spring Boot的工作中并不需要使用CLI。</code></p>
+<h2 id="四、Developing-Your-First-Spring-Boot-Application"><a href="#四、Developing-Your-First-Spring-Boot-Application" class="headerlink" title="四、Developing Your First Spring Boot Application"></a>四、Developing Your First Spring Boot Application</h2><p>This section describes how to develop a simple “Hello World!” web application that highlights some of Spring Boot’s key features. We use Maven to build this project, since most IDEs support it.<br><code>这个部分演示怎么使用maven部署一个简单的&quot;Hello World&quot;web应用，大部分IDEs都支持使用maven</code></p>
+<p>Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:<br><code>开始之前要确认Java和Maven已安装好</code></p>
+<pre><code class="Java">$ java -version
+java version &quot;1.8.0_102&quot;
+Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)</code></pre>
+<pre><code class="maven">$ mvn -v
+Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
+Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+Java version: 1.8.0_102, vendor: Oracle Corporation</code></pre>
+<p>This sample needs to be created in its own folder. Subsequent instructions assume that you have created a suitable folder and that it is your current directory.<br><code>也就是说，需要创建一个文件夹，并且当前的路径是在你创建的文件下</code></p>
+<h3 id="1、Creating-the-POM"><a href="#1、Creating-the-POM" class="headerlink" title="1、Creating the POM"></a>1、Creating the POM</h3><p>We need to start by creating a Maven pom.xml file. The pom.xml is the recipe that is used to build your project. Open your favorite text editor and add the following:<br><code>使用喜爱的编辑工具创建一个pom.xml文件</code></p>
+<pre><code class="pom.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;myproject&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.2.0.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;!-- Additional lines to be added here... --&gt;
+&lt;/project&gt;</code></pre>
+<h3 id="2、Adding-Classpath-Dependencies"><a href="#2、Adding-Classpath-Dependencies" class="headerlink" title="2、Adding Classpath Dependencies"></a>2、Adding Classpath Dependencies</h3><p>Spring Boot提供了很多的”Starters”，让你可以把jars添加到classpath下。我们在POM中的parent部分添加了<code>spring-boot-starter-parent</code>，<code>spring-boot-starter-parent</code>是一个特殊的starter，它提供了<code>dependency-management</code>，因此我们在依赖中可以踢出<code>version</code>标签。<br>这个地方我们以添加<code>spring-boot-starter-web</code>为列：</p>
+<pre><code class="web">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<h3 id="3、Writing-the-Code"><a href="#3、Writing-the-Code" class="headerlink" title="3、Writing the Code"></a>3、Writing the Code</h3><p>To finish our application, we need to create a single Java file. By default, Maven compiles sources from src/main/java, so you need to create that folder structure and then add a file named src/main/java/Example.java to contain the following code:<br><code>maven默认是在src/main/java/下编译源文件的，因此需要将Example.java类文件添加到src/main/java/目录下</code></p>
+<pre><code class="Example.java">import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@EnableAutoConfiguration
+public class Example {
+
+    @RequestMapping(&quot;/&quot;)
+    String home() {
+        return &quot;Hello World!&quot;;
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(Example.class, args);
+    }
+}
+</code></pre>
+<p><code>@RestController</code>和<code>@RequestMapping</code>是SpringMVC的注解！<br><code>@EnableAutoConfiguration</code>这是一个对于Spring Boot来说，很核心的一个注解，我们后面再说。</p>
+<h3 id="4、Running-the-Example"><a href="#4、Running-the-Example" class="headerlink" title="4、Running the Example"></a>4、Running the Example</h3><p>At this point, your application should work. Since you used the spring-boot-starter-parent POM, you have a useful run goal that you can use to start the application. Type <code>mvn spring-boot:run</code> from the root project directory to start the application. You should see output similar to the following:<br><code>在项目根目录执行mvn spring-boot:run，就可以看到输出日志</code></p>
+<pre><code class="log">$ mvn spring-boot:run
+
+  .   ____          _            __ _ _
+ /\\ / ___&#39;_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  &#39;  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v2.2.0.RELEASE)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started Example in 2.222 seconds (JVM running for 6.514)</code></pre>
+<p>If you open a web browser to <a href="localhost:8080" target="_blank" rel="noopener">localhost:8080</a>, you should see the following output:</p>
+<pre><code class="text">Hello World!</code></pre>
+<p>To gracefully exit the application, press <code>ctrl-c</code>。</p>
+<h3 id="5、Creating-an-Executable-Jar"><a href="#5、Creating-an-Executable-Jar" class="headerlink" title="5、Creating an Executable Jar"></a>5、Creating an Executable Jar</h3><p>To create an executable jar, we need to add the <code>spring-boot-maven-plugin</code> to our <code>pom.xml</code>. To do so, insert the following lines just below the dependencies section:<br><code>在pom文件中添加如下依赖</code></p>
+<pre><code class="maven">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+<p>Notice：The <code>spring-boot-starter-parent</code> POM includes <code>&lt;executions&gt;</code>configuration to bind the <code>repackage</code> goal. If you do not use the parent POM, you need to declare this configuration yourself. See the <a href="https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/maven-plugin//usage.html" target="_blank" rel="noopener">plugin documentation</a> for details.<br><code>spring-boot-starter-parent包含了&lt;executions&gt;并且绑定了repackage构建，因此我们直接加上上面的依赖就可以了。如果你没有使用parent Pom的话呢，就需要自己声明构建配置了</code></p>
+<p>Save your <code>pom.xml</code> and run <code>mvn package</code> from the command line, as follows:</p>
+<pre><code class="plugin">$ mvn package
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building myproject 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] .... ..
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
+[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:2.2.0.RELEASE:repackage (default) @ myproject ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------</code></pre>
+<p>If you look in the <code>target</code> directory, you should see <code>myproject-0.0.1-SNAPSHOT.jar</code>. The file should be around 10 MB in size. If you want to peek inside, you can use <code>jar tvf</code>, as follows:<br><code>在target目录中可以看到myproject-0.0.1-SNAPSHOT.jar文件，使用jar tvf可以查看文件内部的详细信息</code></p>
+<pre><code class="detail">$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar</code></pre>
+<p>You should also see a much smaller file named <code>myproject-0.0.1-SNAPSHOT.jar.original</code> in the <code>target</code> directory. This is the original jar file that Maven created before it was repackaged by Spring Boot.<br><code>在target目录中还可以看到一个myproject-0.0.1-SNAPSHOT.jar.original文件，它是maven在使用Spring Boot打包之前创建的jar源文件</code></p>
+<p>To run that application, use the java -jar command, as follows:</p>
+<pre><code class="run">$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___&#39;_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  &#39;  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v2.2.0.RELEASE)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started Example in 2.536 seconds (JVM running for 2.864)</code></pre>
+<p>As before, to exit the application, press ctrl-c.</p>
+<p>到此为止呢，Spring Boot的灵魂三问已经清楚了。但是发现一个问题，手动去写POM，然后创建类文件，这么简单工程还好，那么复杂的工程的呢，这个过程就很痛苦了啊。那么我们来看看使用工具怎么创建Spring Boot工程，这里使用Idea为例，其他的IDEs类似，就不用说了哈！</p>
+<h2 id="五、Develop-Spring-Boot-Aplication-With-IDEA"><a href="#五、Develop-Spring-Boot-Aplication-With-IDEA" class="headerlink" title="五、Develop Spring Boot Aplication With IDEA"></a>五、Develop Spring Boot Aplication With IDEA</h2><h3 id="1、初始化Spring-Boot项目"><a href="#1、初始化Spring-Boot项目" class="headerlink" title="1、初始化Spring Boot项目"></a>1、初始化Spring Boot项目</h3><p>打开Idea，左上角依次：file -&gt; new -&gt; project<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro1.jpg" alt><br>在弹出框中左侧菜单中选择Spring Initializr后，在右侧配置SDK版本，下面选择Default就行了，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro2.jpg" alt><br>配置project，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro3.jpg" alt><br>选择需要整合的web中间件，这里有很多的中间可选，可以都看看，后面将要介绍的一些中间件也在里面（如：eureka），然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro4.jpg" alt><br>配置项目存储路径，Finish后，来看下目录结构：<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro5.jpg" alt><br>到这里，你就可以直接启动了：</p>
+<pre><code class="started">  .   ____          _            __ _ _
+ /\\ / ___&#39;_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  &#39;  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.2.0.RELEASE)
+
+2019-10-19 17:27:49.228  INFO 33267 --- [           main] c.s.s.SpringbootWebApplication           : Starting SpringbootWebApplication on bogon with PID 33267 (/Users/dingzhongshen/SelfProjects/springblog/springboot-web/target/classes started by dingzhongshen in /Users/dingzhongshen/SelfProjects/springblog/springboot-web)
+2019-10-19 17:27:49.232  INFO 33267 --- [           main] c.s.s.SpringbootWebApplication           : No active profile set, falling back to default profiles: default
+2019-10-19 17:27:50.389  INFO 33267 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2019-10-19 17:27:50.398  INFO 33267 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2019-10-19 17:27:50.399  INFO 33267 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.27]
+2019-10-19 17:27:50.469  INFO 33267 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-10-19 17:27:50.469  INFO 33267 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1150 ms
+2019-10-19 17:27:50.631  INFO 33267 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService &#39;applicationTaskExecutor&#39;
+2019-10-19 17:27:50.816  INFO 33267 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path &#39;&#39;
+2019-10-19 17:27:50.819  INFO 33267 --- [           main] c.s.s.SpringbootWebApplication           : Started SpringbootWebApplication in 2.547 seconds (JVM running for 5.328)</code></pre>
+<p>看到上面日志<code>Tomcat started on port(s): 8080</code>，就表示Spring Boot项目已经初始化并启动成功了。是不是很简单，开箱即用嘛！！！<br>当然啦，我们要做的事情，可不止这么多，接下来写个Controller试试。</p>
+<h3 id="2、配置Spring-Boot"><a href="#2、配置Spring-Boot" class="headerlink" title="2、配置Spring Boot"></a>2、配置Spring Boot</h3><p>在<code>resources</code>目录下，有个<code>application.properties</code>文件，我喜欢改成<code>application.yml</code>。然后就可以在这个文件中配置需要的属性啦，比如将服务端口号改成8081：</p>
+<pre><code class="application.yml">server:
+  port: 8081</code></pre>
+<p>启动应用之后，就可以在日志里看到端口被改成：</p>
+<pre><code class="port">o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path &#39;&#39;</code></pre>
+<p><code>context path</code>也是可以进行配置的。在使用spring boot的时候，需要集成一些其他的中间件，它们的属性都配置在这里，那他们有什么样的属性，怎么看呢？别急，后面介绍！</p>
+<h3 id="3、编写逻辑，加入相应的启动注解"><a href="#3、编写逻辑，加入相应的启动注解" class="headerlink" title="3、编写逻辑，加入相应的启动注解"></a>3、编写逻辑，加入相应的启动注解</h3><p><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro6.jpg" alt><br>启动之后，在浏览器流输入<a href="http://localhost:8080/" target="_blank" rel="noopener">http://localhost:8080/</a>，就可以看到效果啦，是不是很酷：</p>
+<pre><code class="text">Hello World!</code></pre>
+<p>Bingo！！！恭喜你，已经初步掌握Spring Boot啦！上面已经包含了springboot整合中间件的过程，不知道你发现没，没有？不急，后面再说！现在你就只需要知道，使用Spring Boot无非就这么 <strong><em>三板斧</em></strong> 就行了！</p>
+
+        </div>
+        <!-- .entry-content -->
+        <div class="single-reward">
+          <div class="reward-open">赏<div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/alipay.jpg"></li>
+                <li class="wechat-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/wechat.jpg"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+        
+      </section>
+<!--
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz",
+        appKey: "mgOpfzbkHYqU92CV4IDlAUHQ",
+        path: window.location.pathname,
+        placeholder: "你是我一生只会遇见一次的惊喜 ..."
+      })
+  }
+</script>
+
+-->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg" itemprop="image" alt="多多" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">多多</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>一个好奇的人</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+
+
+    </div>    
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 duoduo<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/disqus-preloader.svg">
+      </div>
+<!-- 
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse"></i>
+        duoduo's litter house
+      </p>
+ -->
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+<!--
+         <span style="color: #b9b9b9;">
+           <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block" ></i>
+         </span>
+-->
+         <span style="color: #b9b9b9;">
+           <a target="_blank" rel="nofollow" href="https://github.com/bruceting"><i class="fa fa-github" style="/* color: #ffc0cb; */display:inline-block;font-size: x-large;"></i></a>
+         </span>
+
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse" style="color: #e74c3c;"></i>
+        duoduo's litter house
+      </p>
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="fa fa-snowflake-o rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>
+        </span>
+<!--        <span style="color: #b9b9b9;">Powered by Hexo</span>
+-->
+<!--
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Hosted by Coding Pages</a>
+        </span>
+ -->
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+
+<!-- live2d -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/bruceting/live2d-widget/autoload.js"></script> -->
+
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">たくさん</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+      
+        <a href="http://github.com/BruceTing" class="fa fa-github" target="_blank" style="color: #333; margin-left:20px"></a>
+      
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=954655431&site=qq&menu=yes" class="fa fa-qq" target="_blank" style="color: #25c6fe; margin-left:20px"></a>
+      
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/tech/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  技术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/life/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/thought/">
+                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                  随想
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/source/">
+                  <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                  资源
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/reprint/">
+                  <i class="fa fa-book" aria-hidden="true"></i>
+                  转载
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我？
+                </a>
+              </li>
+            
+              <li>
+                <a href="/atom.xml">
+                  <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                  RSS
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019 hexo-sakura</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+<style>
+  .aplayer .aplayer-lrc {
+    height: 35px;
+  }
+  .aplayer .aplayer-lrc p{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18px !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: #FF1493;
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    left: -66px !important;
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer .aplayer-lrc.aplayer-lrc-hide {
+      display:none !important;
+  }
+  .aplayer.aplayer-fixed .lrc-show {
+    display: block;
+    background: rgba(255, 255, 255, 0.8);
+  }
+</style>
+<div class="aplayer"
+
+    data-id="2660651585"
+
+    data-server="netease"
+
+    data-type="playlist"
+
+    data-fixed="true"
+
+    data-autoplay="false"
+
+    data-loop="all"
+
+    data-order="random"
+
+    data-preload="auto"
+
+    data-volume="0.7"
+
+    data-mutex="true"
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/meting@1.2/dist/Meting.min.js"></script>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-button').hasClass('aplayer-play')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } else {
+        $('.aplayer-lrc').addClass('lrc-show');
+      }
+    })
+  });
+</script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/haru01.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
