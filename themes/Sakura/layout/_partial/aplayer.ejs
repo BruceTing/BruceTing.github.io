@@ -1,7 +1,5 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
-<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
-<!-- require MetingJS -->
-<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
 <style>
   .aplayer .aplayer-lrc {
     height: 35px;
@@ -28,11 +26,12 @@
     background: rgba(255, 255, 255, 0.8);
   }
 </style>
-<meting-js
+<div class="aplayer"
 <% for (i in theme.aplayer) {%>
-    <%- i %>="<%- theme.aplayer[i] %>"
+    data-<%- i %>="<%- theme.aplayer[i] %>"
 <% } %>
-</meting-js>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/meting@1.2/dist/Meting.min.js"></script>
 <script>
   $(function(){
     $('body').on('click', '.aplayer', function(){

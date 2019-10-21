@@ -41,15 +41,40 @@ insight:
     untitled: '(无标题)'
 
 #category
-技术:
+tech:
     zh: 野生技术协会
     en: Geek – Only for Love
-    img: https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/banner/coding.jpg
-生活:
-    zh: 生活
-    en: live
-    img: https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/banner/writing.jpg
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-tech.jpeg
+life:
+    zh: 困难，是因为你再逆流而上
+    en: No Gains, No Gains
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-life.jpeg
+thought:
+    zh: 心有灵犀一点通
+    en: For hearts the one minute thread from root to tip of the magic horn
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-thought.jpeg
+source:
+    zh: 没有你想要的 
+    en: Nothing came of your trip
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-source.jpeg
+reprint:
+    zh: 都是别人的
+    en: Take them away
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-reprint.jpeg
 
 #tag
 悦读:
-    img: https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/banner/reading.jpg
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/reading.jpg
+
+spring:
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-spring.jpeg
+
+springboot:
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-spring.jpeg
+
+springcloud:
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-springcloud.jpeg
+
+
+
+

@@ -104,24 +104,32 @@
             document.getElementById("num").innerHTML = num;
             if (num < 0) {
                 document.getElementById("num").innerHTML = 0;
-                location.href = "https://www.hojun.cn";
+                location.href = window.history.back();
+                <!--
+                location.href = "https://www.yeahme.cn";
+                -->
             }
         }
         setInterval("redirect()", 1000);
     </script>
 </head>
 
-<!-- <body onload="redirect();">
+<body onload="redirect();">
 <div class="whole">
     <img src="https://wx4.sinaimg.cn/large/006bYVyvgy1ftan82duvvj30xc0p0mzb.jpg">
     <div class="mask"></div>
 </div>
 <div class="b">
+    <!--
     <h1 class="center">可能输错网址或此页面从未存在过</h1>
+    -->
     <p><br><br><br><br>
         <span id="num"></span>秒后将继续探险...
     </p>
-</div> -->
+</div>
 </body>
-<script type="text/javascript" src="//qzonestyle.gtimg.cn/qzone/hybrid/app/404/search_children.js" charset="utf-8" homePageUrl="https://www.hojun.cn/" homePageName="返回主页"></script>
+
+<!--
+<script type="text/javascript" src="//qzonestyle.gtimg.cn/qzone/hybrid/app/404/search_children.js" charset="utf-8" homePageUrl="https://www.yeahme.cn/" homePageName="返回主页"></script>
+-->
 </html>

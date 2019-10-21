@@ -45,8 +45,7 @@
         </div>
         <!-- .entry-content -->
         <div class="single-reward">
-          <div class="reward-open">赏
-            <div class="reward-main">
+          <div class="reward-open">赏<div class="reward-main">
               <ul class="reward-row">
                 <li class="alipay-code"><img src="<%- (theme.cdn || '') + theme.donate.alipay%>"></li>
                 <li class="wechat-code"><img src="<%- (theme.cdn || '') + theme.donate.wechat%>"></li>
@@ -109,7 +108,9 @@
           </div>
         <% } %>
       </section>
+<!--
       <%- partial('_partial/comment') %>
+-->
       <section class="author-profile">
         <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
           <a href="<%- post.authorLink %>" class="profile gravatar"><img src="<%- post.avatar%>" itemprop="image" alt="<%- post.author %>" height="70" width="70"></a>
