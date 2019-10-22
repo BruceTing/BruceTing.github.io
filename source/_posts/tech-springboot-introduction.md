@@ -1,5 +1,5 @@
 ---
-title: Springboot开篇
+title: Springboot开胃菜
 author: 多多
 avatar: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg
 authorLink:
@@ -12,7 +12,7 @@ tags:
  - springboot
 keywords: springboot
 description: springboot的基本介绍及应用
-photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro.jpeg
+photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction.jpeg
 ---
 
 我们在学习某一知识之前，总得清楚它是**干什么的（What）**，**怎么干（How）**，**为什么这么干（Why）**，对它发出来自灵魂的三拷问。  
@@ -297,15 +297,15 @@ As before, to exit the application, press ctrl-c.
 ## 五、Develop Spring Boot Aplication With IDEA
 ### 1、初始化Spring Boot项目
 打开Idea，左上角依次：file -> new -> project  
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro1.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction1.jpg)  
 在弹出框中左侧菜单中选择Spring Initializr后，在右侧配置SDK版本，下面选择Default就行了，然后next  
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro2.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction2.jpg)  
 配置project，然后next  
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro3.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction3.jpg)  
 选择需要整合的web中间件，这里有很多的中间可选，可以都看看，后面将要介绍的一些中间件也在里面（如：eureka），然后next  
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro4.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction4.jpg)  
 配置项目存储路径，Finish后，来看下目录结构：  
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro5.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction5.jpg)  
 到这里，你就可以直接启动了：
 
 ```started log
@@ -346,7 +346,7 @@ o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http
 ```context path```也是可以进行配置的。在使用spring boot的时候，需要集成一些其他的中间件，它们的属性都配置在这里，那他们有什么样的属性，怎么看呢？别急，后面介绍！
 
 ### 3、编写逻辑，加入相应的启动注解
-![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro6.jpg)  
+![](https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction6.jpg)  
 启动之后，在浏览器流输入[http://localhost:8080/](http://localhost:8080/)，就可以看到效果啦，是不是很酷：
 
 ```text
@@ -355,8 +355,5 @@ Hello World!
 
 
 Bingo！！！恭喜你，已经初步掌握Spring Boot啦！上面已经包含了springboot整合中间件的过程，不知道你发现没，没有？不急，后面再说！现在你就只需要知道，使用Spring Boot无非就这么 ***三板斧*** 就行了！
-
-
-
 
 
