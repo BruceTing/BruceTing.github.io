@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
   
-  <title itemprop="name">Springboot开篇 | DuoDuo</title>
+  <title itemprop="name">Springboot开胃菜 | DuoDuo</title>
   
     <link rel="shortcut icon" href="/images/favicon.ico">
   
@@ -250,11 +250,11 @@
 
   <div class="pattern-center single-center">
     <!-- 有配图默认渲染第一张 -->
-    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro.jpeg">
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction.jpeg">
     </div>
     <header class="pattern-header single-header">
       <h1 class="entry-title">
-      Springboot开篇</h1>
+      Springboot开胃菜</h1>
       <p class="entry-census">
         <span>
           <a href="">
@@ -498,7 +498,7 @@ public class Example {
 ........ Started Example in 2.536 seconds (JVM running for 2.864)</code></pre>
 <p>As before, to exit the application, press ctrl-c.</p>
 <p>到此为止呢，Spring Boot的灵魂三问已经清楚了。但是发现一个问题，手动去写POM，然后创建类文件，这么简单工程还好，那么复杂的工程的呢，这个过程就很痛苦了啊。那么我们来看看使用工具怎么创建Spring Boot工程，这里使用Idea为例，其他的IDEs类似，就不用说了哈！</p>
-<h2 id="五、Develop-Spring-Boot-Aplication-With-IDEA"><a href="#五、Develop-Spring-Boot-Aplication-With-IDEA" class="headerlink" title="五、Develop Spring Boot Aplication With IDEA"></a>五、Develop Spring Boot Aplication With IDEA</h2><h3 id="1、初始化Spring-Boot项目"><a href="#1、初始化Spring-Boot项目" class="headerlink" title="1、初始化Spring Boot项目"></a>1、初始化Spring Boot项目</h3><p>打开Idea，左上角依次：file -&gt; new -&gt; project<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro1.jpg" alt><br>在弹出框中左侧菜单中选择Spring Initializr后，在右侧配置SDK版本，下面选择Default就行了，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro2.jpg" alt><br>配置project，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro3.jpg" alt><br>选择需要整合的web中间件，这里有很多的中间可选，可以都看看，后面将要介绍的一些中间件也在里面（如：eureka），然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro4.jpg" alt><br>配置项目存储路径，Finish后，来看下目录结构：<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro5.jpg" alt><br>到这里，你就可以直接启动了：</p>
+<h2 id="五、Develop-Spring-Boot-Aplication-With-IDEA"><a href="#五、Develop-Spring-Boot-Aplication-With-IDEA" class="headerlink" title="五、Develop Spring Boot Aplication With IDEA"></a>五、Develop Spring Boot Aplication With IDEA</h2><h3 id="1、初始化Spring-Boot项目"><a href="#1、初始化Spring-Boot项目" class="headerlink" title="1、初始化Spring Boot项目"></a>1、初始化Spring Boot项目</h3><p>打开Idea，左上角依次：file -&gt; new -&gt; project<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction1.jpg" alt><br>在弹出框中左侧菜单中选择Spring Initializr后，在右侧配置SDK版本，下面选择Default就行了，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction2.jpg" alt><br>配置project，然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction3.jpg" alt><br>选择需要整合的web中间件，这里有很多的中间可选，可以都看看，后面将要介绍的一些中间件也在里面（如：eureka），然后next<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction4.jpg" alt><br>配置项目存储路径，Finish后，来看下目录结构：<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction5.jpg" alt><br>到这里，你就可以直接启动了：</p>
 <pre><code class="started">  .   ____          _            __ _ _
  /\\ / ___&#39;_ __ _ _(_)_ __  __ _ \ \ \ \
 ( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \
@@ -524,7 +524,7 @@ public class Example {
 <p>启动应用之后，就可以在日志里看到端口被改成：</p>
 <pre><code class="port">o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path &#39;&#39;</code></pre>
 <p><code>context path</code>也是可以进行配置的。在使用spring boot的时候，需要集成一些其他的中间件，它们的属性都配置在这里，那他们有什么样的属性，怎么看呢？别急，后面介绍！</p>
-<h3 id="3、编写逻辑，加入相应的启动注解"><a href="#3、编写逻辑，加入相应的启动注解" class="headerlink" title="3、编写逻辑，加入相应的启动注解"></a>3、编写逻辑，加入相应的启动注解</h3><p><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/springboot-intro6.jpg" alt><br>启动之后，在浏览器流输入<a href="http://localhost:8080/" target="_blank" rel="noopener">http://localhost:8080/</a>，就可以看到效果啦，是不是很酷：</p>
+<h3 id="3、编写逻辑，加入相应的启动注解"><a href="#3、编写逻辑，加入相应的启动注解" class="headerlink" title="3、编写逻辑，加入相应的启动注解"></a>3、编写逻辑，加入相应的启动注解</h3><p><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction6.jpg" alt><br>启动之后，在浏览器流输入<a href="http://localhost:8080/" target="_blank" rel="noopener">http://localhost:8080/</a>，就可以看到效果啦，是不是很酷：</p>
 <pre><code class="text">Hello World!</code></pre>
 <p>Bingo！！！恭喜你，已经初步掌握Spring Boot啦！上面已经包含了springboot整合中间件的过程，不知道你发现没，没有？不急，后面再说！现在你就只需要知道，使用Spring Boot无非就这么 <strong><em>三板斧</em></strong> 就行了！</p>
 
@@ -553,6 +553,23 @@ public class Example {
       <!-- #post-## -->
       <div class="toc" style="background: none;"></div>
       <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre full previous">
+          
+            <a href="/2019/10/21/tech-springboot-annotation/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/annotation.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/annotation.jpeg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                Springboot核心注解</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
         
         
       </section>
