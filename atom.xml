@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="/"/>
-  <updated>2019-10-22T15:24:44.212Z</updated>
+  <updated>2019-10-23T14:01:09.762Z</updated>
   <id>/</id>
   
   <author>
@@ -21,11 +21,11 @@
     <link href="/2019/10/23/tech-springboot-autoconfig/"/>
     <id>/2019/10/23/tech-springboot-autoconfig/</id>
     <published>2019-10-23T02:00:00.000Z</published>
-    <updated>2019-10-22T15:24:44.212Z</updated>
+    <updated>2019-10-23T14:01:09.762Z</updated>
     
     <summary type="html">
     
-      通过对springboot核心注解的了解，为学习自动配置原理做下铺垫
+      一步一步通过源码分析springboot自动配置原理
     
     </summary>
     
@@ -41,7 +41,7 @@
     <link href="/2019/10/21/tech-springboot-annotation/"/>
     <id>/2019/10/21/tech-springboot-annotation/</id>
     <published>2019-10-21T03:00:00.000Z</published>
-    <updated>2019-10-22T15:19:49.778Z</updated>
+    <updated>2019-10-23T14:33:42.111Z</updated>
     
     <summary type="html">
     
