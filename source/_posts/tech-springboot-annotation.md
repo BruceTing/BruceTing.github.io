@@ -26,12 +26,12 @@ photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/sp
 
 一个个来看看都是啥意思：
 
-  * @SpringBootConfiguration 表示提供Springboot应用所需要的配置，该注解在Springboot应用中可以使用来替代```@Configuration```，这样的话，在自动配置的时候，就可以被自动发现了。Springboot应用有且只能包含一个```@SpringBootConfiguration```注解。
-  * @EnableAutoConfiguration 这个是核心中的核心注解啦！使用该注解后，spring应用上下文就会试着去猜测并且配置你所期望的bean。自动配置类是基于你的classpath和你定义了什么样的bean而被应用。比如说：在你的类路径下有```tomcat-embedded.jar```，那就意味着你希望有一个```TomcatServletWebServerFactory```，除非你自己定义了```TomcatServletWebServerFactory```bean。使用```@SpringBootApplication```意味着自动配置自动生效，如果有你不需要的配置，可以使用```#excludeName()```进行排除。自动配置的类通常都是Spring```@Configuration```的bean，这些bean通过使用```SpringFactoriesLoader```机制定位。通常自动配置类都是```@Conditional```的beans(大多数使用```@ConditionalOnClass```和```@ConditionalOnMissingBean```注解)。在注解上包含了两个注解：
+  * @SpringBootConfiguration 用于加载Springboot应用所需要的配置，并且标注当前类是配置类，将配置类中声明的一个或是多个已@Bean注解标记的方法的实例纳入到spring容器中，并且实例名就是方法名。该注解在Springboot应用中可以使用来替代```@Configuration```，这样的话，在自动配置的时候，就可以被自动发现了，该注解本身就组合了@Configuration注解。Springboot应用有且只能包含一个```@SpringBootConfiguration```注解。
+  * @EnableAutoConfiguration 这个是核心中的核心注解啦！使用该注解表示开启自动配置功能，spring应用上下文就会试着去猜测并且配置你所期望的bean。其实就是将所有符合```@Conditional```注解的配置类加载到Springboot创建的容器中。自动配置类是基于你的classpath和你定义了什么样的bean而被应用。比如说：在你的类路径下有```tomcat-embedded.jar```，那就意味着你希望有一个```TomcatServletWebServerFactory```，除非你自己定义了```TomcatServletWebServerFactory```bean。使用```@SpringBootApplication```意味着自动配置自动生效，如果有你不需要的配置，可以使用```#excludeName()```进行排除。自动配置的类通常都是Spring```@Configuration```的bean，这些bean通过使用```SpringFactoriesLoader```机制定位。通常自动配置类都是```@Conditional```的beans(大多数使用```@ConditionalOnClass```和```@ConditionalOnMissingBean```注解)。在注解上包含了两个注解：
    * AutoConfigurationPackage 存储自动配置的包，在该包下的bean都会被注册
      * @Import(AutoConfigurationPackages.Registrar.class) 通过这个注解去存储基础包及注册bean的定义
    * @Import(AutoConfigurationImportSelector.class) 这就是自动配置的核心啦，所有的自动配置类通过这个导入进来，那么它是在哪里被调用，以及自动配置bean怎么配置进来的，留待后面分析。
-  * @ComponentScan 这个是组件扫描，可以配置组件扫描的基础包以及过滤器
+  * @ComponentScan 这个是组件扫描，可以配置组件扫描的基础包以及过滤器，加载符合条件的组件或Bean的定义，最终将这些Bean加载到容器中。Spring框架默认以Springboot启动类所在的包为```basePackage```进行扫描，当然也可以通过```basePackage```等属性自定义扫描范围。
   * @ConfigurationPropertiesScan 指定扫描```@ConfigurationProperties```类的基础包
     * @Import(ConfigurationPropertiesScanRegistrar.class) 通过扫描使用```ImportBeanDefinitionRegistrar```注册```@ConfigurationPropertie```bean定义
     * @EnableConfigurationProperties 对带有```@ConfigurationProperties```注解的bean都可以使用标准的方式被注册，比如说使用```@Bean```方式
