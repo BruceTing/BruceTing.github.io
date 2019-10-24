@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
   
-  <title itemprop="name">Category: tech | DuoDuo</title>
+  <title itemprop="name">自定义Springboot的Starter | DuoDuo</title>
   
     <link rel="shortcut icon" href="/images/favicon.ico">
   
@@ -244,303 +244,254 @@
   </div>
 </header>
 
-      
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
 <div class="pattern-center-blank"></div>
-<div class="pattern-center ">
-  <div class="pattern-attachment-img">
-    <img data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-tech.jpeg" class="lazyload" onerror="imgError(this,3)" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      自定义Springboot的Starter</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">多多</a>
+        </span>
+        <span class="bull">
+        ·</span>
+        2019-10-24<span class="bull">
+        ·</span>
+      <span id="busuanzi_value_page_pv"></span>次阅读</p>
+    </header>
   </div>
-  <header class="pattern-header ">
-    <h1 class="cat-title">野生技术协会</h1>
-    <span class="cat-des">
-      <p>Geek – Only for Love</p>
-    </span>
-  </header>
-</div>
+
 <div id="content" class="site-content">
   <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <p>理解了Springboot自动配置原理后呢，来看看怎么自定义一个starter。<br>Starter的命名也是有一定的规范的，官方说的是：spring-boot-starter-xxx被官方保留使用啦，第三方自定义就使用xxx-spring-boot-starter。</p>
+<h2 id="一、初始化工程"><a href="#一、初始化工程" class="headerlink" title="一、初始化工程"></a>一、初始化工程</h2><p>怎么初始化工程，请看<a href="https://www.yeahme.cn/2019/10/19/tech-springboot-introduction/#五、Develop-Spring-Boot-Aplication-With-IDEA" target="_blank" rel="noopener">这里吧</a>！<br>1、使用Idea初始化一个没有整合任何中间件的项目，也就是说在使用工具中的<code>Spring Initializr</code>初始化项目的时候，在选择中间件依赖的时候，啥也不选直接next。这里就初始化一个叫<code>hello-spring-boot-starter</code>的项目<br>2、在初始化出来的项目中，把生成的包及其中的类删掉，然后新建自己的包。<br>3、新建<code>com.springboot.hello.marker</code>包，这个包用于条件注解用，也就是说，自定义的自动配置必须在有这个类的前提下，自动配置才能生效。</p>
+<pre><code class="Marker">public class Marker {
+}</code></pre>
+<p>4、新建<code>com.springboot.hello.service</code>包，用于写业务逻辑：</p>
+<pre><code class="HelloStarterService">public class HelloStarterService {
+
+    public String helloStarter() {
+        return &quot;WOW！Hello starter is working...&quot;;
+    }
+
+}</code></pre>
+<p>5、新建    <code>com.springboot.hello.autoconfig</code>包，在其中编写自动配置类：</p>
+<pre><code class="HelloStarterAutoConfiguration">@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(Marker.class)
+public class HelloStarterAutoConfiguration {
+
+    @Bean
+    public HelloStarterService getHelloStarterService() {
+        return new HelloStarterService();
+    }
+
+}</code></pre>
+<p>如果业务逻辑中需要属性配置，还可以在类上加上<code>@EnableConfigurationProperties({xxxProperties.class})</code>，也可以在类上使用<code>@EnableConfigurationProperties</code>启用属性配置后，在方法上使用<code>@ConfigurationProperties(prefix = &quot;xxx.xxx&quot;)</code>进行配置，也可以加上其他的条件注解<code>@ConditionalXXX</code>进行更复杂的配置。<br>6、在<code>resources</code>包下新建<code>META-INF/spring.factories</code>文件，在其中写上自动配置类：</p>
+<pre><code class="auto"># Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.springboot.hello.autoconfig.HelloStarterAutoConfiguration</code></pre>
+<p>7、在打包之前删除<code>pom.xml</code>中的这段配置，否则回报<code>找不到main类的错误</code>：</p>
+<pre><code class="pom.xml">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+<p>8、在我们之前的<code>springboot-web</code>项目的<code>pom.xml</code>中引入这个starter：</p>
+<pre><code class="starter">&lt;dependency&gt;
+    &lt;groupId&gt;com.springboot&lt;/groupId&gt;
+    &lt;artifactId&gt;hello-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+<p>然后我们在项目的<code>application.yml</code>文件中打开<code>debug</code>：</p>
+<pre><code class="debug">server:
+  port: 8081
+debug: true</code></pre>
+<p>上面的端口号，是之前改的，后面访问的时候就使用这个端口！<br>9、在<code>Helloworld.java</code>中加入在自动配置类中写的<code>HelloStarterService</code>，这个地方不需要去实例化，就可以拿到接口<code>HelloStarterService</code>的实例，自动配置已经帮我们搞好了，直接用就行了。</p>
+<pre><code class="Helloworld">@RestController
+public class Helloworld {
+
+    @Autowired
+    private HelloStarterService helloStarterService;
+
+    @RequestMapping
+    public String helloworld() {
+        return &quot;hello world&quot;;
+    }
+
+    @RequestMapping(&quot;/helloStarter&quot;)
+    public String helloStarter() {
+        return helloStarterService.helloStarter();
+    }
+
+}</code></pre>
+<p>启动一下，见证奇迹的时刻。<br>在启动后的日志中发现，自定义的自动配置类已经生效了：</p>
+<pre><code class="log">============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+    ...
+    ...
+    HelloStarterAutoConfiguration matched:
+      - @ConditionalOnClass found required class &#39;com.springboot.hello.marker.Marker&#39; (OnClassCondition)
+   ...
+   ...
+
+Negative matches:
+-----------------
+
+   ActiveMQAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class &#39;javax.jms.ConnectionFactory&#39; (OnClassCondition)
+
+   ...
+   ...</code></pre>
+<p><code>Positive matches</code>是自动配置生效的，<code>Negative matches</code>是自动配置没有生效的。<br>如果我们的自动配置没有生效会不会出现在<code>Negative matches</code>中呢，把自动配置中的条件稍微改一下，来看看：</p>
+<pre><code class="HelloStarterAutoConfiguration">@Configuration(proxyBeanMethods = false)
+@ConditionalOnBean(Marker.class)
+public class HelloStarterAutoConfiguration {
+
+    @Bean
+    public HelloStarterService getHelloStarterService() {
+        return new HelloStarterService();
+    }
+
+}</code></pre>
+<p>把条件改成了<code>@ConditionalOnBean(Marker.class)</code>，由于在Spring context环境中是不会存在<code>Marker</code>类实例的，所以自动配置是不会生效的，重新打包，<code>reimport</code>一下maven依赖，然后启动<code>springboot-web</code>项目后，会看到这样的输入日志：</p>
+<pre><code class="log">
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field helloStarterService in com.springboot.springbootweb.controller.Helloworld required a bean of type &#39;com.springboot.hello.service.HelloStarterService&#39; that could not be found.
+
+The injection point has the following annotations:
+    - @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+The following candidates were found but could not be injected:
+    - Bean method &#39;getHelloStarterService&#39; in &#39;HelloStarterAutoConfiguration&#39; not loaded because @ConditionalOnBean (types: com.springboot.hello.marker.Marker; SearchStrategy: all) did not find any beans of type com.springboot.hello.marker.Marker
+
+
+Action:
+
+Consider revisiting the entries above or defining a bean of type &#39;com.springboot.hello.service.HelloStarterService&#39; in your configuration.</code></pre>
+<p>自动配置失效，属性注入失败，应用启动失败！<br>OK！我们改回去，重启启动起来。<br>10、在浏览器中输入：<code>http://localhost:8081/helloStarter</code>后，可以看到：</p>
+<pre><code class="res">WOW！hello starter is working...</code></pre>
+<p>到此呢，自定义Springboot Starter就搞定了。<br>再来总结下步骤：</p>
+<ul>
+<li>初始化一个starter项目</li>
+<li>编写业务逻辑</li>
+<li>编写自动配置类及配置相应的配置</li>
+<li>将自动配置类加入到<code>META-INF/spring.factories</code>文件中</li>
+<li>打包starter</li>
+<li>在项目中引用</li>
+</ul>
+
+        </div>
+        <!-- .entry-content -->
+        <div class="single-reward">
+          <div class="reward-open">赏<div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/alipay.jpg"></li>
+                <li class="wechat-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/wechat.jpg"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+        
+          
+            <div class="post-nepre full next">
+          
+            <a href="/2019/10/23/tech-springboot-autoconfig/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/autoconfig.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/autoconfig.jpeg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                Springboot自动配置原理解析</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+<!--
       
-  <!-- 首页默认取最最新文章集 -->
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/24/tech-springboot-custstarter/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/24/tech-springboot-custstarter/">
-    自定义Springboot的Starter</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-24</div>
-    <p>
-    学习完Springboot的自动配置原理后，实战怎么自定义Springboot的Starter</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/24/tech-springboot-custstarter/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/23/tech-springboot-autoconfig/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/autoconfig.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/23/tech-springboot-autoconfig/">
-    Springboot自动配置原理解析</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-23</div>
-    <p>
-    一步一步通过源码分析springboot自动配置原理</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/23/tech-springboot-autoconfig/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/21/tech-springboot-annotation/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/annotation.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/21/tech-springboot-annotation/">
-    Springboot核心注解</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-21</div>
-    <p>
-    通过对springboot核心注解的了解，为学习自动配置原理做下铺垫</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/21/tech-springboot-annotation/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/19/tech-springboot-introduction/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/19/tech-springboot-introduction/">
-    Springboot开胃菜</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-19</div>
-    <p>
-    springboot的基本介绍及应用</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/19/tech-springboot-introduction/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz",
+        appKey: "mgOpfzbkHYqU92CV4IDlAUHQ",
+        path: window.location.pathname,
+        placeholder: "你是我一生只会遇见一次的惊喜 ..."
+      })
+  }
+</script>
 
-
-      <div class="clearer">
-      </div>
-    </main>
-    <!--  -->
-    
-  </div>
+-->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg" itemprop="image" alt="多多" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">多多</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>一个好奇的人</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
 </div>
 
-<!-- 
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/24/tech-springboot-custstarter/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/24/tech-springboot-custstarter/">
-    自定义Springboot的Starter</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-24</div>
-    <p>
-    学习完Springboot的自动配置原理后，实战怎么自定义Springboot的Starter</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/24/tech-springboot-custstarter/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/23/tech-springboot-autoconfig/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/autoconfig.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/23/tech-springboot-autoconfig/">
-    Springboot自动配置原理解析</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-23</div>
-    <p>
-    一步一步通过源码分析springboot自动配置原理</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/23/tech-springboot-autoconfig/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/21/tech-springboot-annotation/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/annotation.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/21/tech-springboot-annotation/">
-    Springboot核心注解</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-21</div>
-    <p>
-    通过对springboot核心注解的了解，为学习自动配置原理做下铺垫</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/21/tech-springboot-annotation/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
-    <article class="post post-list" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="post-entry">
-    <div class="feature">
-      <a href="/2019/10/19/tech-springboot-introduction/">
-        <div class="overlay">
-          <i class="iconfont icon-text">
-          </i>
-        </div>
-        <img width="150" height="150" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/introduction.jpeg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" >
-      </a>
-    </div>
-    <h1 class="entry-title">
-    <a href="/2019/10/19/tech-springboot-introduction/">
-    Springboot开胃菜</a>
-    </h1>
-    <div class="p-time">
-      <i class="iconfont icon-time">
-      </i>
-    2019-10-19</div>
-    <p>
-    springboot的基本介绍及应用</p>
-    <footer class="entry-footer">
-      <div class="post-more">
-        <a href="/2019/10/19/tech-springboot-introduction/">
-          <i class="iconfont icon-caidan">
-          </i>
-        </a>
-      </div>
-    </footer>
-  </div>
-  <hr>
-</article>
-  
 
- -->
+
     </div>    
     <div class="ins-search">
     <div class="ins-search-mask"></div>

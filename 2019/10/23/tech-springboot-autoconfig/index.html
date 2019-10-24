@@ -289,7 +289,7 @@ public class SpringbootWebApplication {
 }</code></pre>
 <p>从<code>run</code>方法进去，直到以下代码：  </p>
 <pre><code class="构造SpringApplication实例">    public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) {
-       // 资源加载器
+            // 资源加载器
         this.resourceLoader = resourceLoader;
         Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;);
         this.primarySources = new LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));
@@ -306,7 +306,7 @@ public class SpringbootWebApplication {
         this.mainApplicationClass = deduceMainApplicationClass();
     }</code></pre>
 <p>上面这段代码，就是为后面运行springboot做好准备。接着往下到<code>run</code>方法：</p>
-<pre><code class="run">   // 运行Spring application，创建并且刷新一个新的ApplicationContext
+<pre><code class="run">        // 运行Spring application，创建并且刷新一个新的ApplicationContext
     public ConfigurableApplicationContext run(String... args) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -604,7 +604,7 @@ public class SpringbootWebApplication {
 <pre><code class="processConfigBeanDefinitions">    public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
         List&lt;BeanDefinitionHolder&gt; configCandidates = new ArrayList&lt;&gt;();
         String[] candidateNames = registry.getBeanDefinitionNames();
-
+                // 获取@Configuration class的Bean定义信息
         for (String beanName : candidateNames) {
             BeanDefinition beanDef = registry.getBeanDefinition(beanName);
             if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
@@ -648,7 +648,7 @@ public class SpringbootWebApplication {
         }
 
         // Parse each @Configuration class
-        // 开始处理@Configuration类
+        // 构造处理@Configuration类的解析器
         ConfigurationClassParser parser = new ConfigurationClassParser(
                 this.metadataReaderFactory, this.problemReporter, this.environment,
                 this.resourceLoader, this.componentScanBeanNameGenerator, registry);
@@ -656,7 +656,7 @@ public class SpringbootWebApplication {
         Set&lt;BeanDefinitionHolder&gt; candidates = new LinkedHashSet&lt;&gt;(configCandidates);
         Set&lt;ConfigurationClass&gt; alreadyParsed = new HashSet&lt;&gt;(configCandidates.size());
         do {
-           // 开始解析
+                // 开始解析@Configuration class
             parser.parse(candidates);
             parser.validate();
 
@@ -1237,9 +1237,26 @@ public @interface EnableAutoConfiguration {
       <div class="toc" style="background: none;"></div>
       <section class="post-squares nextprev">
         
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2019/10/24/tech-springboot-custstarter/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                自定义Springboot的Starter</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
         
           
-            <div class="post-nepre full next">
+            <div class="post-nepre half next">
           
             <a href="/2019/10/21/tech-springboot-annotation/" rel="next">
               <div class="background">
