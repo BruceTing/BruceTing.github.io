@@ -30,7 +30,7 @@ public class SpringbootWebApplication {
 
 ```构造SpringApplication实例
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-	   // 资源加载器
+	        // 资源加载器
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
@@ -50,7 +50,7 @@ public class SpringbootWebApplication {
 上面这段代码，就是为后面运行springboot做好准备。接着往下到```run```方法：
 
 ```run
-   // 运行Spring application，创建并且刷新一个新的ApplicationContext
+        // 运行Spring application，创建并且刷新一个新的ApplicationContext
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -369,7 +369,7 @@ public class SpringbootWebApplication {
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		String[] candidateNames = registry.getBeanDefinitionNames();
-
+                // 获取@Configuration class的Bean定义信息
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
@@ -413,7 +413,7 @@ public class SpringbootWebApplication {
 		}
 
 		// Parse each @Configuration class
-		// 开始处理@Configuration类
+		// 构造处理@Configuration类的解析器
 		ConfigurationClassParser parser = new ConfigurationClassParser(
 				this.metadataReaderFactory, this.problemReporter, this.environment,
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
@@ -421,7 +421,7 @@ public class SpringbootWebApplication {
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
-		   // 开始解析
+		        // 开始解析@Configuration class
 			parser.parse(candidates);
 			parser.validate();
 
