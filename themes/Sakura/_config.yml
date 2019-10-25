@@ -11,7 +11,7 @@ pjax: 1
 # 1开启
 mathjax: 0
 
-notice: duoduo博客已在2019.10.16上线，持续更新中...
+notice: duoduo博客已在2019.10.16正式上线，持续更新中...
 lazyloadImg: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif
 
 menus:
