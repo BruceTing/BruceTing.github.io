@@ -281,7 +281,9 @@
         
         <div class="entry-content">
           <p>理解了Springboot自动配置原理后呢，来看看怎么自定义一个starter。<br>Starter的命名也是有一定的规范的，官方说的是：spring-boot-starter-xxx被官方保留使用啦，第三方自定义就使用xxx-spring-boot-starter。</p>
-<h2 id="一、初始化工程"><a href="#一、初始化工程" class="headerlink" title="一、初始化工程"></a>一、初始化工程</h2><p>怎么初始化工程，请看<a href="https://www.yeahme.cn/2019/10/19/tech-springboot-introduction/#五、Develop-Spring-Boot-Aplication-With-IDEA" target="_blank" rel="noopener">这里吧</a>！<br>1、使用Idea初始化一个没有整合任何中间件的项目，也就是说在使用工具中的<code>Spring Initializr</code>初始化项目的时候，在选择中间件依赖的时候，啥也不选直接next。这里就初始化一个叫<code>hello-spring-boot-starter</code>的项目<br>2、在初始化出来的项目中，把生成的包及其中的类删掉，然后新建自己的包。<br>3、新建<code>com.springboot.hello.marker</code>包，这个包用于条件注解用，也就是说，自定义的自动配置必须在有这个类的前提下，自动配置才能生效。</p>
+<h3 id="自定义Springboot-Starter"><a href="#自定义Springboot-Starter" class="headerlink" title="自定义Springboot Starter"></a>自定义Springboot Starter</h3><p>怎么初始化一个项目，请看<a href="https://www.yeahme.cn/2019/10/19/tech-springboot-introduction/#五、Develop-Spring-Boot-Aplication-With-IDEA" target="_blank" rel="noopener">这里吧</a>！<br>1、使用Idea初始化一个没有整合任何中间件的项目，也就是说在使用工具中的<code>Spring Initializr</code>初始化项目的时候，在选择中间件依赖的时候，啥也不选直接next。这里就初始化一个叫<code>hello-spring-boot-starter</code>的项目  </p>
+<p>2、在初始化出来的项目中，把生成的包及其中的类删掉，然后新建自己的包。  </p>
+<p>3、新建<code>com.springboot.hello.marker</code>包，这个包用于条件注解用，也就是说，自定义的自动配置必须在有这个类的前提下，自动配置才能生效。</p>
 <pre><code class="Marker">public class Marker {
 }</code></pre>
 <p>4、新建<code>com.springboot.hello.service</code>包，用于写业务逻辑：</p>
@@ -303,7 +305,8 @@ public class HelloStarterAutoConfiguration {
     }
 
 }</code></pre>
-<p>如果业务逻辑中需要属性配置，还可以在类上加上<code>@EnableConfigurationProperties({xxxProperties.class})</code>，也可以在类上使用<code>@EnableConfigurationProperties</code>启用属性配置后，在方法上使用<code>@ConfigurationProperties(prefix = &quot;xxx.xxx&quot;)</code>进行配置，也可以加上其他的条件注解<code>@ConditionalXXX</code>进行更复杂的配置。<br>6、在<code>resources</code>包下新建<code>META-INF/spring.factories</code>文件，在其中写上自动配置类：</p>
+<p>如果业务逻辑中需要属性配置，还可以在类上加上<code>@EnableConfigurationProperties({xxxProperties.class})</code>，也可以在类上使用<code>@EnableConfigurationProperties</code>启用属性配置后，在方法上使用<code>@ConfigurationProperties(prefix = &quot;xxx.xxx&quot;)</code>进行配置，也可以加上其他的条件注解<code>@ConditionalXXX</code>进行更复杂的配置。  </p>
+<p>6、在<code>resources</code>包下新建<code>META-INF/spring.factories</code>文件，在其中写上自动配置类：</p>
 <pre><code class="auto"># Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.springboot.hello.autoconfig.HelloStarterAutoConfiguration</code></pre>
@@ -326,7 +329,8 @@ com.springboot.hello.autoconfig.HelloStarterAutoConfiguration</code></pre>
 <pre><code class="debug">server:
   port: 8081
 debug: true</code></pre>
-<p>上面的端口号，是之前改的，后面访问的时候就使用这个端口！<br>9、在<code>Helloworld.java</code>中加入在自动配置类中写的<code>HelloStarterService</code>，这个地方不需要去实例化，就可以拿到接口<code>HelloStarterService</code>的实例，自动配置已经帮我们搞好了，直接用就行了。</p>
+<p>上面的端口号，是之前改的，后面访问的时候就使用这个端口！  </p>
+<p>9、在<code>Helloworld.java</code>中加入在自动配置类中写的<code>HelloStarterService</code>，这个地方不需要去实例化，就可以拿到接口<code>HelloStarterService</code>的实例，自动配置已经帮我们搞好了，直接用就行了。</p>
 <pre><code class="Helloworld">@RestController
 public class Helloworld {
 
@@ -379,7 +383,7 @@ public class HelloStarterAutoConfiguration {
     }
 
 }</code></pre>
-<p>把条件改成了<code>@ConditionalOnBean(Marker.class)</code>，由于在Spring context环境中是不会存在<code>Marker</code>类实例的，所以自动配置是不会生效的，重新打包，<code>reimport</code>一下maven依赖，然后启动<code>springboot-web</code>项目后，会看到这样的输入日志：</p>
+<p>把条件改成了<code>@ConditionalOnBean(Marker.class)</code>，由于在Spring context环境中是不存在<code>Marker</code>类实例的，所以自动配置是不会生效的，重新打包，<code>reimport</code>一下maven依赖，然后启动<code>springboot-web</code>项目后，会看到这样的输出日志：</p>
 <pre><code class="log">
 ***************************
 APPLICATION FAILED TO START
@@ -399,7 +403,53 @@ The following candidates were found but could not be injected:
 Action:
 
 Consider revisiting the entries above or defining a bean of type &#39;com.springboot.hello.service.HelloStarterService&#39; in your configuration.</code></pre>
-<p>自动配置失效，属性注入失败，应用启动失败！<br>OK！我们改回去，重启启动起来。<br>10、在浏览器中输入：<code>http://localhost:8081/helloStarter</code>后，可以看到：</p>
+<p>自动配置失效，属性注入失败，应用启动失败！把<code>helloStarterService</code>这个属性注释掉：</p>
+<pre><code class="Helloworld">@RestController
+public class Helloworld {
+
+//    @Autowired
+//    private HelloStarterService helloStarterService;
+
+    @RequestMapping
+    public String helloworld() {
+        return &quot;hello world&quot;;
+    }
+
+    @RequestMapping(&quot;/helloStarter&quot;)
+    public String helloStarter() {
+//        return helloStarterService.helloStarter();
+        return null;
+    }
+
+}</code></pre>
+<p>再启动下，服务正常启动后看看日志：</p>
+<pre><code class="log">============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   DispatcherServletAutoConfiguration matched:
+      - @ConditionalOnClass found required class &#39;org.springframework.web.servlet.DispatcherServlet&#39; (OnClassCondition)
+      - found &#39;session&#39; scope (OnWebApplicationCondition)
+   ...
+   ...
+
+Negative matches:
+-----------------
+
+   ...
+   ...
+   HelloStarterAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: com.springboot.hello.marker.Marker; SearchStrategy: all) did not find any beans of type com.springboot.hello.marker.Marker (OnBeanCondition)
+
+   ...
+   ...</code></pre>
+<p>预料之中，对吧！通个这个日志就可以知道自定义的自动配置类有没有生效啦！<br>OK！我们去掉<code>helloStarterService</code>属性及方法中的注释，将<code>Starter</code>中的<code>@ConditionalOnBean</code>改回<code>@ConditionalOnClass</code>，重新打包后，在项目中<code>reimport</code>一下项目依赖，让项目重新正常启动起来。  </p>
+<p>10、在浏览器中输入：<code>http://localhost:8081/helloStarter</code>后，可以看到：</p>
 <pre><code class="res">WOW！hello starter is working...</code></pre>
 <p>到此呢，自定义Springboot Starter就搞定了。<br>再来总结下步骤：</p>
 <ul>
