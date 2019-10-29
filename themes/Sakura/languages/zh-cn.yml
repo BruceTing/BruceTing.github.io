@@ -63,9 +63,6 @@ reprint:
     img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/ctg-reprint.jpeg
 
 #tag
-悦读:
-    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/reading.jpg
-
 spring:
     img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-spring.jpeg
 
@@ -75,6 +72,8 @@ springboot:
 springcloud:
     img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-springcloud.jpeg
 
+mybatis:
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-mybatis.jpeg
 
 
 
