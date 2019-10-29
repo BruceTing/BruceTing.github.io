@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="/"/>
-  <updated>2019-10-25T14:08:08.479Z</updated>
+  <updated>2019-10-29T14:04:04.834Z</updated>
   <id>/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MyBatis基本用法及怎么与Springboot整合</title>
+    <link href="/2019/10/29/tech-springboot-mybatisIntro/"/>
+    <id>/2019/10/29/tech-springboot-mybatisIntro/</id>
+    <published>2019-10-29T07:30:10.000Z</published>
+    <updated>2019-10-29T14:04:04.834Z</updated>
+    
+    <summary type="html">
+    
+      通过对MyBatis的介绍，了解MyBatis通常的用法及怎么与Springboot进行整合
+    
+    </summary>
+    
+      <category term="tech" scheme="/categories/tech/"/>
+    
+    
+      <category term="mybatis" scheme="/tags/mybatis/"/>
+    
+  </entry>
   
   <entry>
     <title>自定义Springboot的Starter</title>

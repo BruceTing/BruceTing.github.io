@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
   
-  <title itemprop="name">archive_a | DuoDuo</title>
+  <title itemprop="name">MyBatis基本用法及怎么与Springboot整合 | DuoDuo</title>
   
     <link rel="shortcut icon" href="/images/favicon.ico">
   
@@ -244,117 +244,371 @@
   </div>
 </header>
 
-      <div class="blank" style="padding-top: 75px;">
-</div>
-<div id="content" class="site-content">
-  <div id="main">
-    <header class="page-header">
-      <h1 class="cat-title">
-      归档</h1>
-      <span class="cat-des">
-        <p>
-        Archives</p>
-      </span>
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mybatisIntro.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mybatisIntro.jpeg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      MyBatis基本用法及怎么与Springboot整合</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">多多</a>
+        </span>
+        <span class="bull">
+        ·</span>
+        2019-10-29<span class="bull">
+        ·</span>
+      <span id="busuanzi_value_page_pv"></span>次阅读</p>
     </header>
-    <div id="main-part">
-      <article class="art">
-        <div class="art-main">
-          <div class="art-content">
-            <div id="archives">
-              <p style="text-align:right;">
-                [<span id="al_expand_collapse" style="cursor: s-resize;">
-                全部展开/收缩</span>
-              ]</p>
-              
-              
-              
-              
-              
-                
-                <h3 class="al_year">2019年</h3>
-              
-              
-                
-                <ul class="al_mon_list">
-                  <li class="al_li">
-                    <span class="al_mon" style="cursor: s-resize;">
-                      10月(<span id="post-num">
-                      3</span>
-                    篇文章)</span>
-                    <ul class="al_post_list" style="">
-              
-                      <li>
-                        <a href="/2019/10/29/tech-springboot-mybatisIntro/">
-                          <span style="color:#0bf;">
-                          29日15:30:10</span>
-                          MyBatis基本用法及怎么与Springboot整合
-                        </a>
-                      </li>
-                      
-              
-              
-              
-              
-              
-                      <li>
-                        <a href="/2019/10/24/tech-springboot-custstarter/">
-                          <span style="color:#0bf;">
-                          24日18:30:00</span>
-                          自定义Springboot的Starter
-                        </a>
-                      </li>
-                      
-              
-              
-              
-              
-              
-                      <li>
-                        <a href="/2019/10/23/tech-springboot-autoconfig/">
-                          <span style="color:#0bf;">
-                          23日10:00:00</span>
-                          Springboot自动配置原理解析
-                        </a>
-                      </li>
-                      
-              
-              
-              
-              
-              
-                      <li>
-                        <a href="/2019/10/21/tech-springboot-annotation/">
-                          <span style="color:#0bf;">
-                          21日11:00:00</span>
-                          Springboot核心注解
-                        </a>
-                      </li>
-                      
-              
-              
-              
-              
-              
-                      <li>
-                        <a href="/2019/10/19/tech-springboot-introduction/">
-                          <span style="color:#0bf;">
-                          19日15:00:00</span>
-                          Springboot开胃菜
-                        </a>
-                      </li>
-                      
-                    </ul>
-                  </li>
-                </ul>
-              
-              
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h2 id="什么是MyBatis"><a href="#什么是MyBatis" class="headerlink" title="什么是MyBatis"></a>什么是MyBatis</h2><p>MyBatis官网给出的定义如下：</p>
+<pre><code class="What">MyBatis is a first class persistence framework with support for custom SQL, stored procedures and advanced mappings. MyBatis eliminates almost all of the JDBC code and manual setting of parameters and retrieval of results. MyBatis can use simple XML or Annotations for configuration and map primitives, Map interfaces and Java POJOs (Plain Old Java Objects) to database records.</code></pre>
+<p>英文不好？没关系，MyBatis给出了多种语言，其中就包括了中文版官方翻译，来看看：</p>
+<pre><code class="MyBatis的定义">MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</code></pre>
+<h2 id="怎么使用呢"><a href="#怎么使用呢" class="headerlink" title="怎么使用呢"></a>怎么使用呢</h2><p>我们就不按照官网那样，初始化一个maven项目，然后再手动引入jar包的方式来构建项目了。我们直接使用Idea来初始化一个Springboot项目(目前大家都已在用Springboot开发项目，所以直接使用<code>Spring Initializr</code>初始化项目就OK。实在不想用，那就没办法咯！)，熟悉一下Springboot整合中间件的流程。<br>打开Idea，依次<code>File -&gt; new -&gt; Project...</code> ， 选择<code>Spring Initializr</code>，配置好<code>JDK</code>，然后Next，配置好<code>Project Metadata</code>，然后next，可以选择<code>Web -&gt; Spring Web</code>方便后续做测试，重要的是选择<code>SQL -&gt; MyBatis Framework 、MySQL Driver</code>这两项，然后next配置项目名称及存储路径，Finish后呢，项目就建好了，顺带所需要的依赖包也引入到项目了。<br>在开始之前呢，需要准备一个测试库（库名按你喜欢的方式命名就好）以及一个测试表（以下测试表为<code>USER</code>），准备好之后呢，就可以开始以下骚操作了。</p>
+<h3 id="使用官网方式"><a href="#使用官网方式" class="headerlink" title="使用官网方式"></a>使用官网方式</h3><h4 id="1、添加配置"><a href="#1、添加配置" class="headerlink" title="1、添加配置"></a>1、添加配置</h4><p>在<code>resources</code>包下新建<code>mybatis-config.xml</code>，然后加入下面模板内容：</p>
+<pre><code class="mybatis-config">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE configuration
+  PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
+  &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
+&lt;configuration&gt;
+  // 环境的名称，可以配置多个环境，区分开发、测试、生产
+  &lt;environments default=&quot;development&quot;&gt;
+    // 环境ID
+    &lt;environment id=&quot;development&quot;&gt;
+      // 启用事物
+      &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+      // 构建连接池
+      &lt;dataSource type=&quot;POOLED&quot;&gt;
+        // MySQL驱动
+        &lt;property name=&quot;driver&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot;/&gt;
+        // MySQL数据库链接地址
+        &lt;property name=&quot;url&quot; value=&quot;xxx&quot;/&gt;
+        // 用户名
+        &lt;property name=&quot;username&quot; value=&quot;test&quot;/&gt;
+        // 密码
+        &lt;property name=&quot;password&quot; value=&quot;test&quot;/&gt;
+      &lt;/dataSource&gt;
+    &lt;/environment&gt;
+  &lt;/environments&gt;
+  &lt;mappers&gt;
+    &lt;mapper resource=&quot;mapper/UserMapper.xml&quot;/&gt;
+  &lt;/mappers&gt;
+&lt;/configuration&gt;</code></pre>
+<p>依次填上你MySQL的相关信息。<br>MySQL链接的通常写法：<code>jdbc:mysql://ip或domain:port/库名?characterEncoding=utf-8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;serverTimezone=Asia/Shanghai</code>，在xml中配置的时候，需要把<code>&amp;</code>进行转义为<code>&amp;amp;</code>否则会报错：  </p>
+<pre><code class="error">Exception in thread &quot;main&quot; org.apache.ibatis.exceptions.PersistenceException: 
+### Error building SqlSession.
+### Cause: org.apache.ibatis.builder.BuilderException: Error creating document instance.  Cause: org.xml.sax.SAXParseException; lineNumber: 11; columnNumber: 126; 对实体 &quot;autoReconnect&quot; 的引用必须以 &#39;;&#39; 分隔符结尾。
+    at org.apache.ibatis.exceptions.ExceptionFactory.wrapException(ExceptionFactory.java:30)
+    at org.apache.ibatis.session.SqlSessionFactoryBuilder.build(SqlSessionFactoryBuilder.java:80)
+    at org.apache.ibatis.session.SqlSessionFactoryBuilder.build(SqlSessionFactoryBuilder.java:64)
+    at com.springboot.mybatis.MyBatisTest.main(MyBatisTest.java:22)</code></pre>
+<h4 id="2、构建User实体类"><a href="#2、构建User实体类" class="headerlink" title="2、构建User实体类"></a>2、构建<code>User</code>实体类</h4><p>新建包<code>com.springboot.springbootmybatis.model</code>，编写实体类<code>User</code>：</p>
+<pre><code class="User">public class User {
+
+    /**
+     * 主键
+     */
+    private Long id;
+
+    /**
+     * 用户ID
+     */
+    private Long userId;
+
+    /**
+     * 用户名
+     */
+    private String name;
+
+    /**
+     * 用户的邮箱
+     */
+    private String email;
+
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+
+    /**
+     * 修改时间
+     */
+    private Date modifiedTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Date getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(Date modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;User{&quot; +
+                &quot;id=&quot; + id +
+                &quot;, userId=&quot; + userId +
+                &quot;, name=&#39;&quot; + name + &#39;\&#39;&#39; +
+                &quot;, email=&#39;&quot; + email + &#39;\&#39;&#39; +
+                &quot;, createdTime=&quot; + createdTime +
+                &quot;, modifiedTime=&quot; + modifiedTime +
+                &#39;}&#39;;
+    }
+}</code></pre>
+<h4 id="3、构建UserDAO接口"><a href="#3、构建UserDAO接口" class="headerlink" title="3、构建UserDAO接口"></a>3、构建<code>UserDAO</code>接口</h4><p>新建包<code>com.springboot.springbootmybatis.dao</code>，新建接口<code>UserDAO</code>：</p>
+<pre><code class="UserDAO">@Repository
+public interface UserDAO {
+
+    /**
+     * 根据主键查询User信息
+     * @param id
+     * @return
+     */
+    User selectUser(Long id);
+
+}</code></pre>
+<h4 id="4、构建userMapper-xml文件"><a href="#4、构建userMapper-xml文件" class="headerlink" title="4、构建userMapper.xml文件"></a>4、构建<code>userMapper.xml</code>文件</h4><p>在<code>resources</code>下新建<code>mapper</code>文件夹，然后新建<code>userMapper.xml</code>：</p>
+<pre><code class="userUapper.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+&lt;mapper namespace=&quot;com.springboot.dao.UserDAO&quot;&gt;
+    &lt;resultMap id=&quot;baseResultMap&quot; type=&quot;com.springboot.model.User&quot;&gt;
+        &lt;id column=&quot;ID&quot; jdbcType=&quot;BIGINT&quot; property=&quot;id&quot;/&gt;
+        &lt;result column=&quot;USER_ID&quot; jdbcType=&quot;BIGINT&quot; property=&quot;userId&quot;/&gt;
+        &lt;result column=&quot;NAME&quot; jdbcType=&quot;VARCHAR&quot; property=&quot;name&quot;/&gt;
+        &lt;result column=&quot;EMAIL&quot; jdbcType=&quot;VARCHAR&quot; property=&quot;email&quot;/&gt;
+        &lt;result column=&quot;CREATED_TIME&quot; jdbcType=&quot;TIMESTAMP&quot; property=&quot;createdTime&quot;/&gt;
+        &lt;result column=&quot;MODIFIED_TIME&quot; jdbcType=&quot;TIMESTAMP&quot; property=&quot;modifiedTime&quot;/&gt;
+    &lt;/resultMap&gt;
+
+    &lt;sql id=&quot;columns&quot;&gt;
+        ID, USER_ID, NAME, EMAIL, CREATED_TIME, MODIFIED_TIME
+    &lt;/sql&gt;
+
+    &lt;select id=&quot;selectUser&quot; resultMap=&quot;baseResultMap&quot;&gt;
+        select
+            &lt;include refid=&quot;columns&quot;/&gt;
+        from USER where id = #{id}
+    &lt;/select&gt;
+&lt;/mapper&gt;</code></pre>
+<p>以上工作准备好之后，我们就可以开始测试了。<br>新建包<code>com.springboot.springbootmybatis.mybatis</code>，然后新建类<code>MyBatisTest</code>，在<code>main方法</code>中，引入：</p>
+<pre><code class="MyBatis代码">public class MyBatisTest {
+
+    public static void main(String[] args) throws Exception {
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserDAO mapper = session.getMapper(UserDAO.class);
+            User user = mapper.selectUser(1L);
+            System.out.println(user.toString());
+        }
+
+    }
+
+}</code></pre>
+<p>运行代码后，就可以看到正常的日志输出啦：</p>
+<pre><code class="log">12:27:14.182 [main] DEBUG org.apache.ibatis.logging.LogFactory - Logging initialized using &#39;class org.apache.ibatis.logging.slf4j.Slf4jImpl&#39; adapter.
+12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
+12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
+12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
+12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
+12:27:14.326 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Opening JDBC Connection
+12:27:15.277 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - Created connection 1709804316.
+12:27:15.277 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Setting autocommit to false on JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@65e98b1c]
+12:27:15.287 [main] DEBUG com.springboot.dao.UserDAO.selectUser - ==&gt;  Preparing: select ID, USER_ID, NAME, EMAIL, CREATED_TIME, MODIFIED_TIME from USER where id = ? 
+12:27:15.321 [main] DEBUG com.springboot.dao.UserDAO.selectUser - ==&gt; Parameters: 1(Long)
+12:27:15.348 [main] DEBUG com.springboot.dao.UserDAO.selectUser - &lt;==      Total: 1
+User{id=1, userId=28250, name=&#39;测试人&#39;, email=&#39;test@danke.com&#39;, createdTime=Tue Oct 29 11:49:44 CST 2019, modifiedTime=Tue Oct 29 11:49:44 CST 2019}
+12:27:15.349 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Resetting autocommit to true on JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@65e98b1c]
+12:27:15.352 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Closing JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@65e98b1c]
+12:27:15.352 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - Returned connection 1709804316 to pool.</code></pre>
+<p>到这里，我们可能会去想：上面的<code>USER实体类、UserDAO、UserMapper.xml</code>这几个文件，我们都要自己去写吗，一个两个还好，多的话那岂不是很麻烦？非也。官方的大佬已经为我们考虑好了，完全可以使用<a href="http://mybatis.org/generator/index.html" target="_blank" rel="noopener">MyBatis Generator(MBG)</a>来生成嘛，这不就很爽了吗！  </p>
+<h3 id="Springboot自动配置"><a href="#Springboot自动配置" class="headerlink" title="Springboot自动配置"></a>Springboot自动配置</h3><p>我们保留<code>dao、model、mapper</code>，自动配置的时候，还需要使用，可别删了，要不还得再来一遍。把<code>mybatis-config.xml</code>注释掉或改为<code>mybatis-config.xml.bak</code>，<code>MyBatisTest</code>可以暂时不用管。  </p>
+<h4 id="1、数据源及Mapper配置"><a href="#1、数据源及Mapper配置" class="headerlink" title="1、数据源及Mapper配置"></a>1、数据源及Mapper配置</h4><p>将<code>resources/application.properties</code>文件改为<code>resources/application.yml</code>，当然，不改也可以，个人喜欢<code>yml</code>方式配置而已。😎<br>然后在<code>application.yml</code>文件中添加以下配置：</p>
+<pre><code class="application.yml">spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: test
+    password: test
+    url: xxx
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+</code></pre>
+<p>注意：在写yml文件的时候，数据库链接url中的<code>&amp;</code>不需要转义成<code>&amp;amp;</code></p>
+<h4 id="2、构建Controller"><a href="#2、构建Controller" class="headerlink" title="2、构建Controller"></a>2、构建<code>Controller</code></h4><p>新建包<code>com.springboot.springbootmybatis.controller</code>，新建类<code>HelloUserController</code>：</p>
+<pre><code class="controller">@RestController
+public class HelloUserController {
+
+    @Autowired
+    private UserDAO userDAO; //如果在UserDAO上没有@Repository，此处会报红色的下划线
+
+    @GetMapping(&quot;/user/{userId}&quot;)
+    public User getUser(@PathVariable(&quot;userId&quot;) Long userId) {
+        User user = userDAO.selectUser(userId);
+        return user;
+    }
+
+}</code></pre>
+<p>这里省略了<code>service</code>层，直接在<code>HelloUserController</code>中调用DAO的接口。实际开发中，<code>Service</code>层是必不可少的。这里的<code>@GetMapping 等于 @RequestMapping(method = RequestMethod.GET)</code>，简单的写法，与之对应的还有<code>@PostMapping</code>。</p>
+<h4 id="3、添加Mapper扫描"><a href="#3、添加Mapper扫描" class="headerlink" title="3、添加Mapper扫描"></a>3、添加<code>Mapper</code>扫描</h4><p>在主类<code>SpringbootMybatisApplication</code>上添加注解：<code>@MapperScan(basePackages = &quot;com.springboot.springbootmybatis.dao&quot;)</code>，配置扫描DAO接口的包路径。</p>
+<pre><code class="SpringbootMybatisApplication">@SpringBootApplication
+@MapperScan(basePackages = &quot;com.springboot.springbootmybatis.dao&quot;)
+public class SpringbootMybatisApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringbootMybatisApplication.class, args);
+    }
+
+}</code></pre>
+<p>注意：添加的包需要和主类<code>SpringbootMybatisApplication</code>在同一级目录，否则扫描不到其中的类，之前Springboot的自动配置源码已分析过：<code>会以主类SpringbootMybatisApplication所在的包为basePackage进行组件扫描</code>。既然如此，那这里不配置<code>@MapperScan</code>行不行呢，当然不行！想想啊，我们面向接口编程，需要使用DAO接口去数据库查询数据，然后返回给调用者，如果接口没有实现类，那怎么去数据库查询呢。而且如果没有实现类，Spring怎么去实例化，怎么去帮助我们管理Bean呢，那不用Spring行不行？行啊，那就使用上面的那种方式，也可以实现，但是不觉得麻烦吗，所有的事情都要自己去做了，比如：Bean的创建及管理，连接的打开关闭等。那这里加了<code>@MapperScan</code>后，为什么就可以了呢？预知后事如何，请听下回分解！</p>
+<h4 id="4、访问测试"><a href="#4、访问测试" class="headerlink" title="4、访问测试"></a>4、访问测试</h4><p>启动应用程序，在<code>SpringbootMybatisApplication</code>类中右键<code>Run `SpringbootMybatisApplication `</code>，就可以启动啦！在控制台，可以看到以下输出：</p>
+<pre><code class="log">o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path &#39;&#39;</code></pre>
+<p>在浏览器中访问：<a href="http://localhost:8080/user/1" target="_blank" rel="noopener">http://localhost:8080/user/1</a>，即可看到结果：</p>
+<pre><code class="show">{&quot;id&quot;:1,&quot;userId&quot;:11111,&quot;name&quot;:&quot;测试人&quot;,&quot;email&quot;:&quot;test@163.com&quot;,&quot;createdTime&quot;:&quot;2019-10-29 15:49:44&quot;,&quot;modifiedTime&quot;:&quot;2019-10-29 15:49:44&quot;}</code></pre>
+
+        </div>
+        <!-- .entry-content -->
+        <div class="single-reward">
+          <div class="reward-open">赏<div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/alipay.jpg"></li>
+                <li class="wechat-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/wechat.jpg"></li>
+              </ul>
             </div>
           </div>
         </div>
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
       </article>
-    </div>
-  </div>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+        
+          
+            <div class="post-nepre full next">
+          
+            <a href="/2019/10/24/tech-springboot-custstarter/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/spring/springboot/custstarter.jpeg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                自定义Springboot的Starter</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+<!--
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz",
+        appKey: "mgOpfzbkHYqU92CV4IDlAUHQ",
+        path: window.location.pathname,
+        placeholder: "你是我一生只会遇见一次的惊喜 ..."
+      })
+  }
+</script>
+
+-->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg" itemprop="image" alt="多多" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">多多</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>一个好奇的人</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
 </div>
+
+
 
     </div>    
     <div class="ins-search">
