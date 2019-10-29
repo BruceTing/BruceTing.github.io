@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="/"/>
-  <updated>2019-10-29T14:04:04.834Z</updated>
+  <updated>2019-10-29T14:24:03.442Z</updated>
   <id>/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="/2019/10/29/tech-springboot-mybatisIntro/"/>
     <id>/2019/10/29/tech-springboot-mybatisIntro/</id>
     <published>2019-10-29T07:30:10.000Z</published>
-    <updated>2019-10-29T14:04:04.834Z</updated>
+    <updated>2019-10-29T14:24:03.442Z</updated>
     
     <summary type="html">
     
@@ -31,6 +31,8 @@
     
       <category term="tech" scheme="/categories/tech/"/>
     
+    
+      <category term="springboot" scheme="/tags/springboot/"/>
     
       <category term="mybatis" scheme="/tags/mybatis/"/>
     
