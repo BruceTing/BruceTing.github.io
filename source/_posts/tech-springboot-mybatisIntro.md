@@ -10,6 +10,7 @@ date: 2019-10-29 15:30:10
 comments: true
 tags:
  - mybatis
+ - springboot
 keywords: mybatis
 description: 通过对MyBatis的介绍，了解MyBatis通常的用法及怎么与Springboot进行整合
 photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mybatisIntro.jpeg
