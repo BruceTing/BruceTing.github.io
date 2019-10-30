@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
   
-  <title itemprop="name">MyBatis基本用法及怎么与Springboot整合 | DuoDuo</title>
+  <title itemprop="name">MyBatis介绍及基本用法 | DuoDuo</title>
   
     <link rel="shortcut icon" href="/images/favicon.ico">
   
@@ -254,7 +254,7 @@
     </div>
     <header class="pattern-header single-header">
       <h1 class="entry-title">
-      MyBatis基本用法及怎么与Springboot整合</h1>
+      MyBatis介绍及基本用法</h1>
       <p class="entry-census">
         <span>
           <a href="">
@@ -285,15 +285,15 @@
 <p>英文不好？没关系，MyBatis给出了多种语言，其中就包括了中文版官方翻译，来看看：</p>
 <pre><code class="MyBatis的定义">MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</code></pre>
 <h2 id="怎么使用呢"><a href="#怎么使用呢" class="headerlink" title="怎么使用呢"></a>怎么使用呢</h2><p>我们就不按照官网那样，初始化一个maven项目，然后再手动引入jar包的方式来构建项目了。我们直接使用Idea来初始化一个Springboot项目(目前大家都已在用Springboot开发项目，所以直接使用<code>Spring Initializr</code>初始化项目就OK。实在不想用，那就没办法咯！)，熟悉一下Springboot整合中间件的流程。<br>打开Idea，依次<code>File -&gt; new -&gt; Project...</code> ， 选择<code>Spring Initializr</code>，配置好<code>JDK</code>，然后Next，配置好<code>Project Metadata</code>，然后next，可以选择<code>Web -&gt; Spring Web</code>方便后续做测试，重要的是选择<code>SQL -&gt; MyBatis Framework 、MySQL Driver</code>这两项，然后next配置项目名称及存储路径，Finish后呢，项目就建好了，顺带所需要的依赖包也引入到项目了。<br>在开始之前呢，需要准备一个测试库（库名按你喜欢的方式命名就好）以及一个测试表（以下测试表为<code>USER</code>），准备好之后呢，就可以开始以下骚操作了。</p>
-<h3 id="使用官网方式"><a href="#使用官网方式" class="headerlink" title="使用官网方式"></a>使用官网方式</h3><h4 id="1、添加配置"><a href="#1、添加配置" class="headerlink" title="1、添加配置"></a>1、添加配置</h4><p>在<code>resources</code>包下新建<code>mybatis-config.xml</code>，然后加入下面模板内容：</p>
+<h3 id="编程式"><a href="#编程式" class="headerlink" title="编程式"></a>编程式</h3><h4 id="1、添加配置"><a href="#1、添加配置" class="headerlink" title="1、添加配置"></a>1、添加配置</h4><p>在<code>resources</code>包下新建<code>mybatis-config.xml</code>，然后加入下面模板内容：</p>
 <pre><code class="mybatis-config">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
 &lt;!DOCTYPE configuration
   PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
   &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
 &lt;configuration&gt;
-  // 环境的名称，可以配置多个环境，区分开发、测试、生产
+  // 环境的名称，可以配置多个环境
   &lt;environments default=&quot;development&quot;&gt;
-    // 环境ID
+    // 环境ID或数据源ID，通过ID可以配置多个数据源
     &lt;environment id=&quot;development&quot;&gt;
       // 启用事物
       &lt;transactionManager type=&quot;JDBC&quot;/&gt;
@@ -311,10 +311,21 @@
     &lt;/environment&gt;
   &lt;/environments&gt;
   &lt;mappers&gt;
+    // SQL查询语句配置
+    // SQL的配置方式有两种：
+    // 第一种：采用这种XML的配置方式
+    // 第二种：使用注解的方式，直接在接口方法上使用@Select等注解，例如：
+    // public interface UserMapper {
+    //    @Select(&quot;SELECT * FROM USER WHERE id = #{id}&quot;)
+    //    User selectUser(Long id);
+    // }
+    // 两种方式各有优劣，使用哪一种完全取决于自己或是开发团队
     &lt;mapper resource=&quot;mapper/UserMapper.xml&quot;/&gt;
   &lt;/mappers&gt;
 &lt;/configuration&gt;</code></pre>
-<p>依次填上你MySQL的相关信息。<br>MySQL链接的通常写法：<code>jdbc:mysql://ip或domain:port/库名?characterEncoding=utf-8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;serverTimezone=Asia/Shanghai</code>，在xml中配置的时候，需要把<code>&amp;</code>进行转义为<code>&amp;amp;</code>否则会报错：  </p>
+<p>依次填上你MySQL的相关信息即可。<br><code>&lt;configuration&gt;</code>节点中还可以配置<code>&lt;typeHandlers&gt;</code>，<code>&lt;typeHandlers&gt;</code>会对实体类的<code>属性类型</code>和数据库中的<code>字段类型</code>进行转换，MyBatis默认支持已很多的类型转换，比如：<code>String</code>和<code>char、varchar</code>互转，<code>Date</code>和<code>TIMESTAMP</code>互转等。还可以配置<code>&lt;plugins&gt;</code>，用于在处理数据前后做一些事情，比如常用的<code>分页插件</code>，用于对分页进行处理。还有其他的一些配置可以直接在<a href="https://mybatis.org/mybatis-3/zh/configuration.html" target="_blank" rel="noopener">官网的<code>configuration</code>配置文档</a>中查看。<br>MySQL链接的通常写法：</p>
+<pre><code class="database">jdbc:mysql://ip或domain:port/库名?characterEncoding=utf-8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;serverTimezone=Asia/Shanghai</code></pre>
+<p>在xml中配置的时候，需要把<code>&amp;</code>进行转义为<code>&amp;amp;</code>否则会报错：  </p>
 <pre><code class="error">Exception in thread &quot;main&quot; org.apache.ibatis.exceptions.PersistenceException: 
 ### Error building SqlSession.
 ### Cause: org.apache.ibatis.builder.BuilderException: Error creating document instance.  Cause: org.xml.sax.SAXParseException; lineNumber: 11; columnNumber: 126; 对实体 &quot;autoReconnect&quot; 的引用必须以 &#39;;&#39; 分隔符结尾。
@@ -468,7 +479,24 @@ public interface UserDAO {
     }
 
 }</code></pre>
-<p>运行代码后，就可以看到正常的日志输出啦：</p>
+<p>来看看其中几个重要类的<code>官方解释</code>：</p>
+<ul>
+<li><code>SqlSessionFactoryBuilder</code>：这个类可以被实例化、使用和丢弃，一旦创建了<code>SqlSessionFactory</code>，就不再需要它了。 因此<code>SqlSessionFactoryBuilder</code>实例的最佳作用域是方法作用域（也就是局部方法变量）。 你可以重用<code>SqlSessionFactoryBuilder</code>来创建多个<code>SqlSessionFactory</code>实例，但是最好还是不要让其一直存在，以保证所有的 XML 解析资源可以被释放给更重要的事情。</li>
+<li><code>SqlSessionFactory</code>：<code>SqlSessionFactory</code>一旦被创建就应该在应用的运行期间一直存在，没有任何理由丢弃它或重新创建另一个实例。 使用<code>SqlSessionFactory</code>的最佳实践是在应用运行期间不要重复创建多次，多次重建<code>SqlSessionFactory</code>被视为一种代码“坏味道（bad smell）”。因此<code>SqlSessionFactory</code>的最佳作用域是应用作用域。 有很多方法可以做到，最简单的就是使用单例模式或者静态单例模式。</li>
+<li><code>SqlSession</code>：每个线程都应该有它自己的<code>SqlSession</code>实例。<code>SqlSession</code>的实例不是线程安全的，因此是不能被共享的，所以它的最佳的作用域是请求或方法作用域。 绝对不能将<code>SqlSession</code>实例的引用放在一个类的静态域，甚至一个类的实例变量也不行。 也绝不能将 SqlSession 实例的引用放在任何类型的托管作用域中，比如<code>Servlet</code>框架中的<code>HttpSession</code>。 如果你现在正在使用一种<code>Web</code>框架，要考虑<code>SqlSession</code>放在一个和<code>HTTP</code>请求对象相似的作用域中。 换句话说，每次收到的<code>HTTP</code>请求，就可以打开一个<code>SqlSession</code>，返回一个响应，就关闭它。 这个关闭操作是很重要的，你应该把这个关闭操作放到<code>finally</code>块中以确保每次都能执行关闭。 在你的所有的代码中一致地使用以下确保<code>SqlSession</code>关闭的标准模式来保证所有数据库资源都能被正确地关闭：</li>
+</ul>
+<pre><code class="关闭SqlSession的标准模式">try (SqlSession session = sqlSessionFactory.openSession()) {
+  // 你的应用逻辑代码
+}</code></pre>
+<ul>
+<li>映射器实例，即<code>xxxDAO或xxxMapper</code>：映射器是一些由你创建的、绑定你映射的语句的接口。映射器接口的实例是从<code>SqlSession</code>中获得的。因此从技术层面讲，任何映射器实例的最大作用域是和请求它们的<code>SqlSession</code>相同的。尽管如此，映射器实例的最佳作用域是方法作用域。 也就是说，映射器实例应该在调用它们的方法中被请求，用过之后即可丢弃。 并不需要显式地关闭映射器实例，尽管在整个请求作用域保持映射器实例也不会有什么问题，但是你很快会发现，像<code>SqlSession</code>一样，在这个作用域上管理太多的资源的话会难于控制。 为了避免这种复杂性，最好把映射器放在方法作用域内。下面的示例就展示了这个实践：</li>
+</ul>
+<pre><code class="最佳实践">try (SqlSession session = sqlSessionFactory.openSession()) {
+  BlogMapper mapper = session.getMapper(BlogMapper.class);
+  // 你的应用逻辑代码
+}</code></pre>
+<p>后面我们会对这几个重要的类进行源码分析，看看底层都干了啥，怎么干的。</p>
+<p>好了，运行代码后，就可以看到正常的日志输出啦：</p>
 <pre><code class="log">12:27:14.182 [main] DEBUG org.apache.ibatis.logging.LogFactory - Logging initialized using &#39;class org.apache.ibatis.logging.slf4j.Slf4jImpl&#39; adapter.
 12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
 12:27:14.216 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - PooledDataSource forcefully closed/removed all connections.
@@ -484,8 +512,8 @@ User{id=1, userId=28250, name=&#39;测试人&#39;, email=&#39;test@danke.com&#39
 12:27:15.349 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Resetting autocommit to true on JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@65e98b1c]
 12:27:15.352 [main] DEBUG org.apache.ibatis.transaction.jdbc.JdbcTransaction - Closing JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@65e98b1c]
 12:27:15.352 [main] DEBUG org.apache.ibatis.datasource.pooled.PooledDataSource - Returned connection 1709804316 to pool.</code></pre>
-<p>到这里，我们可能会去想：上面的<code>USER实体类、UserDAO、UserMapper.xml</code>这几个文件，我们都要自己去写吗，一个两个还好，多的话那岂不是很麻烦？非也。官方的大佬已经为我们考虑好了，完全可以使用<a href="http://mybatis.org/generator/index.html" target="_blank" rel="noopener">MyBatis Generator(MBG)</a>来生成嘛，这不就很爽了吗！  </p>
-<h3 id="Springboot自动配置"><a href="#Springboot自动配置" class="headerlink" title="Springboot自动配置"></a>Springboot自动配置</h3><p>我们保留<code>dao、model、mapper</code>，自动配置的时候，还需要使用，可别删了，要不还得再来一遍。把<code>mybatis-config.xml</code>注释掉或改为<code>mybatis-config.xml.bak</code>，<code>MyBatisTest</code>可以暂时不用管。  </p>
+<p>到这里，我们可能会去想：上面的<code>USER实体类、UserDAO、UserMapper.xml</code>这几个文件，我们都要自己去写吗，一个两个还好，多的话那岂不是很麻烦？非也。官方的大佬已经为我们考虑好了，完全可以使用<a href="http://mybatis.org/generator/index.html" target="_blank" rel="noopener">MyBatis Generator(MBG)</a>来生成嘛。所以，我们在分析了我们的业务后，把数据库表建好，就直接可以使用<code>MBG</code>生成代码啦，这不就很爽了吗！  </p>
+<h3 id="集成式"><a href="#集成式" class="headerlink" title="集成式"></a>集成式</h3><p>我们保留<code>dao、model、mapper</code>，自动配置的时候，还需要使用，可别删了，要不还得再来一遍。把<code>mybatis-config.xml</code>注释掉或改为<code>mybatis-config.xml.bak</code>，<code>MyBatisTest</code>可以暂时不用管。  </p>
 <h4 id="1、数据源及Mapper配置"><a href="#1、数据源及Mapper配置" class="headerlink" title="1、数据源及Mapper配置"></a>1、数据源及Mapper配置</h4><p>将<code>resources/application.properties</code>文件改为<code>resources/application.yml</code>，当然，不改也可以，个人喜欢<code>yml</code>方式配置而已。😎<br>然后在<code>application.yml</code>文件中添加以下配置：</p>
 <pre><code class="application.yml">spring:
   datasource:
@@ -528,6 +556,55 @@ public class SpringbootMybatisApplication {
 <pre><code class="log">o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path &#39;&#39;</code></pre>
 <p>在浏览器中访问：<a href="http://localhost:8080/user/1" target="_blank" rel="noopener">http://localhost:8080/user/1</a>，即可看到结果：</p>
 <pre><code class="show">{&quot;id&quot;:1,&quot;userId&quot;:11111,&quot;name&quot;:&quot;测试人&quot;,&quot;email&quot;:&quot;test@163.com&quot;,&quot;createdTime&quot;:&quot;2019-10-29 15:49:44&quot;,&quot;modifiedTime&quot;:&quot;2019-10-29 15:49:44&quot;}</code></pre>
+<h2 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h2><h4 id="1、理解什么是MyBatis"><a href="#1、理解什么是MyBatis" class="headerlink" title="1、理解什么是MyBatis"></a>1、理解什么是MyBatis</h4><pre><code class="MyBatis的定义">MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</code></pre>
+<h4 id="2、使用MyBatis的两种方式"><a href="#2、使用MyBatis的两种方式" class="headerlink" title="2、使用MyBatis的两种方式"></a>2、使用MyBatis的两种方式</h4><ul>
+<li>编程式</li>
+<li>集成式</li>
+</ul>
+<h4 id="3、SQL配置的两种方式"><a href="#3、SQL配置的两种方式" class="headerlink" title="3、SQL配置的两种方式"></a>3、SQL配置的两种方式</h4><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">XML方式</td>
+<td align="center">处理复杂的SQL；对SQL进行统一的管理</td>
+<td align="center">XML文件比较多；需要查找XML文件</td>
+</tr>
+<tr>
+<td align="center">注解方式</td>
+<td align="center">简洁直观；不需要去查找XML文件</td>
+<td align="center">不能很好的处理复杂的SQL，会比较混乱</td>
+</tr>
+</tbody></table>
+<h4 id="4、重要类的作用域-Scope-和生命周期"><a href="#4、重要类的作用域-Scope-和生命周期" class="headerlink" title="4、重要类的作用域(Scope)和生命周期"></a>4、重要类的作用域(Scope)和生命周期</h4><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">作用域(Scope)和生命周期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SqlSessionFactoryBuilder</td>
+<td align="center">方法作用域（即：局部方法变量）</td>
+</tr>
+<tr>
+<td align="center">SqlSessionFactory</td>
+<td align="center">应用作用域（单例模式或者静态单例模式）</td>
+</tr>
+<tr>
+<td align="center">SqlSession</td>
+<td align="center">请求或方法作用域（放到<code>finally</code>块或<code>try</code>中，确保关闭）</td>
+</tr>
+<tr>
+<td align="center">映射器实例</td>
+<td align="center">方法作用域（即：局部方法变量）</td>
+</tr>
+</tbody></table>
+<h4 id="5、开发业务顺序"><a href="#5、开发业务顺序" class="headerlink" title="5、开发业务顺序"></a>5、开发业务顺序</h4><p>理解业务 -&gt; 建立库表 -&gt; 使用<code>MBG</code>生成相关代码</p>
 
         </div>
         <!-- .entry-content -->
