@@ -118,4 +118,24 @@
     
   </entry>
   
+  <entry>
+    <title>博客首篇</title>
+    <link href="/2019/10/18/thought-introduction/"/>
+    <id>/2019/10/18/thought-introduction/</id>
+    <published>2019-10-18T10:08:08.000Z</published>
+    <updated>2019-10-31T14:15:16.063Z</updated>
+    
+    <summary type="html">
+    
+      博客的“缘起缘灭”，哈哈哈！！！
+    
+    </summary>
+    
+      <category term="thought" scheme="/categories/thought/"/>
+    
+    
+      <category term="随想" scheme="/tags/%E9%9A%8F%E6%83%B3/"/>
+    
+  </entry>
+  
 </feed>
