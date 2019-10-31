@@ -75,5 +75,9 @@ springcloud:
 mybatis:
     img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-mybatis.jpeg
 
+随想:
+    img: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/banner/tag-thought.jpeg
+
+
 
 
