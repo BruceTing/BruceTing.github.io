@@ -26,4 +26,3 @@ photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/thought/introd
 ### 结果
 通过这个博客，壮着胆子把常用的一些主流框架的学习总结起来，形成自己的知识结构体系。与此同时也可以记录自己生活的点点滴滴，反正就是杂七杂八的呗！  
 
-首次写博客，心里```“激动”```，难免有错，大家勿怪！！！

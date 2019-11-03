@@ -13,7 +13,7 @@ tags:
  - springboot
 keywords: mybatis
 description: 学习MyBatis的基本用法，包括怎么与Springboot进行整合
-photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mybatisIntro.jpeg
+photos: https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/introduction.jpeg
 ---
 
 ## 什么是MyBatis
