@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">MyBatis源码分析之SqlSessionFactory | DuoDuo</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "たくさん";
+  mashiro_option.author_name = "たくさん";
+  mashiro_option.site_url = "https://www.yeahme.cn";
+  mashiro_option.v_appId = "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz";
+  mashiro_option.v_appKey = "mgOpfzbkHYqU92CV4IDlAUHQ";
+  mashiro_option.mathjax = "0";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(1).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(2).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(3).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(4).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(5).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(6).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(7).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(8).jpg.webp".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dim">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="https://www.yeahme.cn">
+          <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>Future is comming!</p>
+<!--
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/BruceTing" target="_blank" class="social-github" title="github">
+                    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/social/github.png">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+-->
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+
+    <div id="page" class="site wrapper">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono"></span>
+            <span class="shironeko">たくさん</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/tech/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          技术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/life/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/thought/">
+                          <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                          随想
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/source/">
+                          <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                          资源
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/reprint/">
+                          <i class="fa fa-book" aria-hidden="true"></i>
+                          转载
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我？
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/atom.xml">
+                          <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                          RSS
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/ssfactory.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/ssfactory.jpeg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      MyBatis源码分析之SqlSessionFactory</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">多多</a>
+        </span>
+        <span class="bull">
+        ·</span>
+        2019-11-3<span class="bull">
+        ·</span>
+      <span id="busuanzi_value_page_pv"></span>次阅读</p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h2 id="构造SqlSessionFactory的主流程"><a href="#构造SqlSessionFactory的主流程" class="headerlink" title="构造SqlSessionFactory的主流程"></a>构造SqlSessionFactory的主流程</h2><p>学习过基本用法之后呢，接着来分析分析源码，首先来看看其中的<code>SqlSessionFactory</code>，我们把之前的<code>MyBatisTest</code>粘一下：</p>
+<pre><code class="MyBatisTest">public class MyBatisTest {
+
+    public static void main(String[] args) throws Exception {
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserDAO mapper = session.getMapper(UserDAO.class);
+            User user = mapper.selectUser(1L);
+            System.out.println(user.toString());
+        }
+
+    }
+
+}</code></pre>
+<p>先来看看这行代码干了啥：</p>
+<pre><code class="SqlSessionFactory">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);</code></pre>
+<p>org.apache.ibatis.session.SqlSessionFactoryBuilder#build(java.io.InputStream) 开始构造<code>SqlSessionFactory</code>：</p>
+<blockquote>
+<p>org.apache.ibatis.builder.xml.XMLConfigBuilder#XMLConfigBuilder(java.io.InputStream, java.lang.String, java.util.Properties)  配置文件、环境、解析器初始化</p>
+<blockquote>
+<blockquote>
+<p>org.apache.ibatis.builder.xml.XMLMapperEntityResolver  构造mybatis dtd文件解析器</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>org.apache.ibatis.parsing.XPathParser#XPathParser(java.io.InputStream, boolean, java.util.Properties, org.xml.sax.EntityResolver) 初始化文件解析器XPathParser，根据配置文件，构造文件的Document对象</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>org.apache.ibatis.session.Configuration 注册通用别名，比如：JDBC -&gt; JdbcTransactionFactory.class，LOG4J -&gt; Log4jImpl.class等，这个是非常重要非常重要非常重要的类，我们所有的配置以及操作都和它相关</p>
+<pre><code class="Configuration()">public Configuration() {
+    // JDBC
+    typeAliasRegistry.registerAlias(&quot;JDBC&quot;, JdbcTransactionFactory.class);
+    typeAliasRegistry.registerAlias(&quot;MANAGED&quot;, ManagedTransactionFactory.class);
+    // JNDI
+    typeAliasRegistry.registerAlias(&quot;JNDI&quot;, JndiDataSourceFactory.class);
+    typeAliasRegistry.registerAlias(&quot;POOLED&quot;, PooledDataSourceFactory.class);
+    typeAliasRegistry.registerAlias(&quot;UNPOOLED&quot;, UnpooledDataSourceFactory.class);
+    // CACHE
+    typeAliasRegistry.registerAlias(&quot;PERPETUAL&quot;, PerpetualCache.class);
+    typeAliasRegistry.registerAlias(&quot;FIFO&quot;, FifoCache.class);
+    typeAliasRegistry.registerAlias(&quot;LRU&quot;, LruCache.class);
+    typeAliasRegistry.registerAlias(&quot;SOFT&quot;, SoftCache.class);
+    typeAliasRegistry.registerAlias(&quot;WEAK&quot;, WeakCache.class);
+    // DB_VENDOR
+    typeAliasRegistry.registerAlias(&quot;DB_VENDOR&quot;, VendorDatabaseIdProvider.class);
+    // XML
+    typeAliasRegistry.registerAlias(&quot;XML&quot;, XMLLanguageDriver.class);
+    typeAliasRegistry.registerAlias(&quot;RAW&quot;, RawLanguageDriver.class);
+    // LOG
+    typeAliasRegistry.registerAlias(&quot;SLF4J&quot;, Slf4jImpl.class);
+    typeAliasRegistry.registerAlias(&quot;COMMONS_LOGGING&quot;, JakartaCommonsLoggingImpl.class);
+    typeAliasRegistry.registerAlias(&quot;LOG4J&quot;, Log4jImpl.class);
+    typeAliasRegistry.registerAlias(&quot;LOG4J2&quot;, Log4j2Impl.class);
+    typeAliasRegistry.registerAlias(&quot;JDK_LOGGING&quot;, Jdk14LoggingImpl.class);
+    typeAliasRegistry.registerAlias(&quot;STDOUT_LOGGING&quot;, StdOutImpl.class);
+    typeAliasRegistry.registerAlias(&quot;NO_LOGGING&quot;, NoLoggingImpl.class);
+    // CGLIB
+    typeAliasRegistry.registerAlias(&quot;CGLIB&quot;, CglibProxyFactory.class);
+    typeAliasRegistry.registerAlias(&quot;JAVASSIST&quot;, JavassistProxyFactory.class);
+    // LANGUAGE
+    languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
+    languageRegistry.register(RawLanguageDriver.class);
+  }</code></pre>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>org.apache.ibatis.builder.xml.XMLConfigBuilder#parse 配置文件解析标识，避免重复解析</p>
+<blockquote>
+<p>org.apache.ibatis.builder.xml.XMLConfigBuilder#parseConfiguration 解析配置文件的核心代码：</p>
+<pre><code class="configuration"> private void parseConfiguration(XNode root) {
+    try {
+      //issue #117 read properties first
+      propertiesElement(root.evalNode(&quot;properties&quot;));
+      Properties settings = settingsAsProperties(root.evalNode(&quot;settings&quot;));
+      loadCustomVfs(settings);
+      loadCustomLogImpl(settings);
+      typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));
+      pluginElement(root.evalNode(&quot;plugins&quot;));
+      objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));
+      objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));
+      reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));
+      settingsElement(settings);
+      // read it after objectFactory and objectWrapperFactory issue #631
+      environmentsElement(root.evalNode(&quot;environments&quot;));
+      // 如果配置了数据库厂商标识（databaseIdProvider），MyBatis 会加载所有的不带
+      // databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，
+      // 则不带的会被忽略。
+      databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));
+      typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));
+      mapperElement(root.evalNode(&quot;mappers&quot;));
+    } catch (Exception e) {
+      throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + e, e);
+    }
+  }</code></pre>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>org.apache.ibatis.session.SqlSessionFactoryBuilder#build(org.apache.ibatis.session.Configuration) 根据解析出来的配置构造SqlSessionFactory：</p>
+<pre><code class="SqlSessionFactory">  public SqlSessionFactory build(Configuration config) {
+    return new DefaultSqlSessionFactory(config);
+  }</code></pre>
+</blockquote>
+<p>通过上面的代码分析知道，我们配置的<code>mybatis-config.xml</code>配置文件，正是在<code>new SqlSessionFactoryBuilder().build(inputStream)</code>方法下进行解析的，主要来看看<code>typeAliases、plugins、environments、typeHandlers、mappers</code>配置怎么解析的，解析到哪里去了。</p>
+<h2 id="typeAliases解析"><a href="#typeAliases解析" class="headerlink" title="typeAliases解析"></a>typeAliases解析</h2><p>直接上源码：org.apache.ibatis.builder.xml.XMLConfigBuilder#typeAliasesElement：</p>
+<pre><code class="typeAliasesElement(XNode">  private void typeAliasesElement(XNode parent) {
+    if (parent != null) {
+      // 将配置的数据注册到TypeAliasRegistry的typeAliases属性中：
+      // private final Map&lt;String, Class&lt;?&gt;&gt; typeAliases = new HashMap&lt;&gt;();
+      // key: alise  value: type
+      // 如果alise为null，则key为：type.getSimpleName()
+      for (XNode child : parent.getChildren()) {
+        if (&quot;package&quot;.equals(child.getName())) {
+          String typeAliasPackage = child.getStringAttribute(&quot;name&quot;);
+          configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
+        } else {
+          String alias = child.getStringAttribute(&quot;alias&quot;);
+          String type = child.getStringAttribute(&quot;type&quot;);
+          try {
+            Class&lt;?&gt; clazz = Resources.classForName(type);
+            if (alias == null) {
+              typeAliasRegistry.registerAlias(clazz);
+            } else {
+              typeAliasRegistry.registerAlias(alias, clazz);
+            }
+          } catch (ClassNotFoundException e) {
+            throw new BuilderException(&quot;Error registering typeAlias for &#39;&quot; + alias + &quot;&#39;. Cause: &quot; + e, e);
+          }
+        }
+      }
+    }
+  }</code></pre>
+<h2 id="plugins解析"><a href="#plugins解析" class="headerlink" title="plugins解析"></a>plugins解析</h2><p>直接上源码：org.apache.ibatis.builder.xml.XMLConfigBuilder#pluginElement：</p>
+<pre><code class="pluginElement(XNode">  private void pluginElement(XNode parent) throws Exception {
+    if (parent != null) {
+      for (XNode child : parent.getChildren()) {
+        String interceptor = child.getStringAttribute(&quot;interceptor&quot;);
+        Properties properties = child.getChildrenAsProperties();
+        Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).getDeclaredConstructor().newInstance();
+        interceptorInstance.setProperties(properties);
+        // 解析出每个plugin，反射实例化后，注册到configuration的interceptorChain属性中，
+        // 其实是放到interceptorChain的list集合org.apache.ibatis.plugin.InterceptorChain#interceptors中：
+        // private final List&lt;Interceptor&gt; interceptors = new ArrayList&lt;&gt;();
+        // 每个插件处理器都实现了Interceptor接口，我们可以实现Interceptor接口，实现自定义的插件处理器
+        configuration.addInterceptor(interceptorInstance);
+      }
+    }
+  }</code></pre>
+<h2 id="environments解析"><a href="#environments解析" class="headerlink" title="environments解析"></a>environments解析</h2><p>先看看源码org.apache.ibatis.builder.xml.XMLConfigBuilder#environmentsElement：</p>
+<pre><code class="environmentsElement(XNode">  private void environmentsElement(XNode context) throws Exception {
+    if (context != null) {
+      // 我们在调用new SqlSessionFactoryBuilder().build(inputStream)的时候，只是把配置文件传进去，没有传数据源ID或其他的属性配置，所以这个地方会去获取默认的数据源配置，刚好我们在配置的时候指定了default，通过传入数据源ID，可以达到使用多数据源的目的。注意：在使用默认环境数据源时，一定要保证默认的环境 ID 要匹配其中一个环境 ID。
+      if (environment == null) {
+        environment = context.getStringAttribute(&quot;default&quot;);
+      }
+      for (XNode child : context.getChildren()) {
+        String id = child.getStringAttribute(&quot;id&quot;);
+        // 这个地方就是环境ID校验了
+        if (isSpecifiedEnvironment(id)) {
+          TransactionFactory txFactory = transactionManagerElement(child.evalNode(&quot;transactionManager&quot;));
+          DataSourceFactory dsFactory = dataSourceElement(child.evalNode(&quot;dataSource&quot;));
+          DataSource dataSource = dsFactory.getDataSource();
+          Environment.Builder environmentBuilder = new Environment.Builder(id)
+              .transactionFactory(txFactory)
+              .dataSource(dataSource);
+          configuration.setEnvironment(environmentBuilder.build());
+        }
+      }
+    }
+  }</code></pre>
+<h4 id="来看看环境ID是怎么校验的，很好理解："><a href="#来看看环境ID是怎么校验的，很好理解：" class="headerlink" title="来看看环境ID是怎么校验的，很好理解："></a>来看看环境ID是怎么校验的，很好理解：</h4><pre><code class="isSpecifiedEnvironment">  private boolean isSpecifiedEnvironment(String id) {
+    if (environment == null) {
+      throw new BuilderException(&quot;No environment specified.&quot;);
+    } else if (id == null) {
+      throw new BuilderException(&quot;Environment requires an id attribute.&quot;);
+    } else if (environment.equals(id)) {
+      return true;
+    }
+    return false;
+  }</code></pre>
+<h3 id="事物TransactionFactory解析"><a href="#事物TransactionFactory解析" class="headerlink" title="事物TransactionFactory解析"></a>事物TransactionFactory解析</h3><pre><code class="TransactionFactory">  private TransactionFactory transactionManagerElement(XNode context) throws Exception {
+    if (context != null) {
+      // 事物管理器类型，有两种[JDBC|MANAGED]：
+      // JDBC：直接使用 JDBC 的提交和回滚设置，它依赖于从数据源得到的连接来管理事务的作用域。
+      // MANAGED：这个配置几乎没做什么，既不提交也不会滚，让容器自己去管理，默认情况下，它只会关闭连接，然而并不是所有的容器允许这么做，通常需要将 closeConnection 属性设置为 false 来阻止它默认的关闭行为，列入：
+      // &lt;transactionManager type=&quot;MANAGED&quot;&gt;
+      //    &lt;property name=&quot;closeConnection&quot; value=&quot;false&quot;/&gt;
+      // &lt;/transactionManager&gt;
+      // 这两种事务管理器类型都不需要设置任何属性。它们其实是类型别名，换句话说，你可以使用 TransactionFactory 接口的实现类的完全限定名或类型别名代替它们。
+      // 属性配置，如果使用 Spring + MyBatis，则没有必要配置事务管理器， 因为 Spring 模块会使用自带的管理器来覆盖前面的配置。
+      String type = context.getStringAttribute(&quot;type&quot;);
+      // 属性配置
+      Properties props = context.getChildrenAsProperties();
+      // 反射获取TransactionFactory的实例
+      TransactionFactory factory = (TransactionFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+      // 属性设置
+      factory.setProperties(props);
+      return factory;
+    }
+    throw new BuilderException(&quot;Environment declaration requires a TransactionFactory.&quot;);
+  }</code></pre>
+<h4 id="来看看resolveClass-type-里都干了啥"><a href="#来看看resolveClass-type-里都干了啥" class="headerlink" title="来看看resolveClass(type)里都干了啥"></a>来看看resolveClass(type)里都干了啥</h4><pre><code class="resolveClass(type)">  protected &lt;T&gt; Class&lt;? extends T&gt; resolveClass(String alias) {
+    if (alias == null) {
+      return null;
+    }
+    try {
+      return resolveAlias(alias);
+    } catch (Exception e) {
+      throw new BuilderException(&quot;Error resolving class. Cause: &quot; + e, e);
+    }
+  }
+
+  protected &lt;T&gt; Class&lt;? extends T&gt; resolveAlias(String alias) {
+    return typeAliasRegistry.resolveAlias(alias);
+  }
+
+  org.apache.ibatis.type.TypeAliasRegistry#resolveAlias:
+  public &lt;T&gt; Class&lt;T&gt; resolveAlias(String string) {
+    try {
+      if (string == null) {
+        return null;
+      }
+      // issue #748
+      String key = string.toLowerCase(Locale.ENGLISH);
+      Class&lt;T&gt; value;
+      if (typeAliases.containsKey(key)) {
+        value = (Class&lt;T&gt;) typeAliases.get(key);
+      } else {
+        value = (Class&lt;T&gt;) Resources.classForName(string);
+      }
+      return value;
+    } catch (ClassNotFoundException e) {
+      throw new TypeException(&quot;Could not resolve type alias &#39;&quot; + string + &quot;&#39;.  Cause: &quot; + e, e);
+    }
+  }</code></pre>
+<p>这个就是通过注册的别名去获取Class，通过<code>JDBC</code>获取到事物管理器Class：<code>JdbcTransactionFactory.class</code>，然后反射拿到它的实例，也就是<code>TransactionFactory</code>啦。</p>
+<h3 id="DataSource解析"><a href="#DataSource解析" class="headerlink" title="DataSource解析"></a>DataSource解析</h3><p>这个地方其实就是和<code>TransactionFactory</code>解析一样的啦：</p>
+<pre><code class="DataSourceFactory">  private DataSourceFactory dataSourceElement(XNode context) throws Exception {
+    if (context != null) {
+      String type = context.getStringAttribute(&quot;type&quot;);
+      Properties props = context.getChildrenAsProperties();
+      DataSourceFactory factory = (DataSourceFactory) resolveClass(type).getDeclaredConstructor().newInstance();
+      factory.setProperties(props);
+      return factory;
+    }
+    throw new BuilderException(&quot;Environment declaration requires a DataSourceFactory.&quot;);
+  }</code></pre>
+<p>最后通过反射拿到<code>PooledDataSourceFactory</code>实例。来看看<code>getDeclaredConstructor().newInstance()</code>构造器里干了啥：</p>
+<pre><code class="PooledDataSourceFactory">public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+
+  public PooledDataSourceFactory() {
+    this.dataSource = new PooledDataSource();
+  }
+
+}</code></pre>
+<p><code>PooledDataSourceFactory</code>继承<code>UnpooledDataSourceFactory</code>，<code>UnpooledDataSourceFactory</code>实现<code>DataSourceFactory</code>。<code>new PooledDataSource()</code>里干了啥：</p>
+<pre><code class="PooledDataSource()">  public PooledDataSource() {
+    dataSource = new UnpooledDataSource();
+  }</code></pre>
+<p><code>PooledDataSource</code>、<code>UnpooledDataSource</code>实现了<code>DataSource</code>，所以看到的是<code>PooledDataSource</code>，其实使用的是<code>UnpooledDataSource</code>。看到的<code>PooledDataSourceFactory</code>，其实使用的<code>UnpooledDataSourceFactory</code>，也就是说干的事情都委托给了<code>UnpooledDataSource</code>和<code>UnpooledDataSourceFactory</code>。所以最终获取到的<code>DataSource</code>是<code>UnpooledDataSource</code>。</p>
+<h3 id="构建Environment，配置Configuration"><a href="#构建Environment，配置Configuration" class="headerlink" title="构建Environment，配置Configuration"></a>构建Environment，配置Configuration</h3><p><code>environmentsElement(XNode context)</code>方法中最后的几行代码就是把获取到的<code>TransactionFactory</code>、<code>DataSource</code>实例扔给<code>Environment.Builder</code>构造出<code>Environment</code>对象，然后赋值给<code>Configuration</code>的<code>environment</code>属性：</p>
+<pre><code class="org.apache.ibatis.mapping.Environment.Builder#build">    public Environment build() {
+      return new Environment(this.id, this.transactionFactory, this.dataSource);
+    }</code></pre>
+<p>至此，<code>Environment</code>解析完毕。</p>
+<h2 id="typeHandlers解析"><a href="#typeHandlers解析" class="headerlink" title="typeHandlers解析"></a>typeHandlers解析</h2><p>先看看源码org.apache.ibatis.builder.xml.XMLConfigBuilder#typeHandlerElement：</p>
+<pre><code class="typeHandlerElement(XNode">  private void typeHandlerElement(XNode parent) {
+    if (parent != null) {
+      // 解析出配置的typeHandler，并注册到configuration的typeHandlerRegistry中
+      // 每个类型处理器均实现了TypeHandler接口，我们可以实现TypeHandler接口，自定义自己的类型解析器
+      for (XNode child : parent.getChildren()) {
+        if (&quot;package&quot;.equals(child.getName())) {
+          String typeHandlerPackage = child.getStringAttribute(&quot;name&quot;);
+          typeHandlerRegistry.register(typeHandlerPackage);
+        } else {
+          String javaTypeName = child.getStringAttribute(&quot;javaType&quot;);
+          String jdbcTypeName = child.getStringAttribute(&quot;jdbcType&quot;);
+          String handlerTypeName = child.getStringAttribute(&quot;handler&quot;);
+          Class&lt;?&gt; javaTypeClass = resolveClass(javaTypeName);
+          JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
+          Class&lt;?&gt; typeHandlerClass = resolveClass(handlerTypeName);
+          if (javaTypeClass != null) {
+            if (jdbcType == null) {
+              typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
+            } else {
+              typeHandlerRegistry.register(javaTypeClass, jdbcType, typeHandlerClass);
+            }
+          } else {
+            typeHandlerRegistry.register(typeHandlerClass);
+          }
+        }
+      }
+    }
+  }</code></pre>
+<h2 id="mappers解析"><a href="#mappers解析" class="headerlink" title="mappers解析"></a>mappers解析</h2><p>先看看源码org.apache.ibatis.builder.xml.XMLConfigBuilder#mapperElement：</p>
+<pre><code class="mapperElement(XNode">  private void mapperElement(XNode parent) throws Exception {
+    if (parent != null) {
+      for (XNode child : parent.getChildren()) {
+        // 解析配置了扫描 mappers 的package节点
+        if (&quot;package&quot;.equals(child.getName())) {
+          String mapperPackage = child.getStringAttribute(&quot;name&quot;);
+          configuration.addMappers(mapperPackage);
+        } else {
+          /**
+          * 解析配置了扫描 mappers 的 mapper 节点
+          * Mapper的配置方式有三种，有且只能配置其中一种，每种都可以配置多个：
+          * 1、使用相对于类路径的资源引用，例如：
+          * &lt;mappers&gt;
+          *     &lt;mapper resource=&quot;org/mybatis/builder/UserMapper.xml&quot;/&gt;
+          *     ....
+          * &lt;/mappers&gt;
+          * 
+          * 2、使用完全限定资源定位符（URL），例如：
+          * &lt;mappers&gt;
+          *     &lt;mapper url=&quot;file:///var/mappers/UserMapper.xml&quot;/&gt;
+          *     ....
+          * &lt;/mappers&gt;
+          * 
+          * 3、使用映射器接口实现类的完全限定类名，例如：
+          * &lt;mappers&gt;
+          *     &lt;mapper class=&quot;org.mybatis.builder.UserMapper&quot;/&gt;
+          *     ....
+          * &lt;/mappers&gt;
+          */
+          String resource = child.getStringAttribute(&quot;resource&quot;);
+          String url = child.getStringAttribute(&quot;url&quot;);
+          String mapperClass = child.getStringAttribute(&quot;class&quot;);
+          if (resource != null &amp;&amp; url == null &amp;&amp; mapperClass == null) {
+            // Mapper方式解析
+            ErrorContext.instance().resource(resource);
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+            mapperParser.parse();
+          } else if (resource == null &amp;&amp; url != null &amp;&amp; mapperClass == null) {
+            // URL方式解析
+            ErrorContext.instance().resource(url);
+            InputStream inputStream = Resources.getUrlAsStream(url);
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+            mapperParser.parse();
+          } else if (resource == null &amp;&amp; url == null &amp;&amp; mapperClass != null) {
+            // 完全限定类方式解析
+            Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);
+            configuration.addMapper(mapperInterface);
+          } else {
+            throw new BuilderException(&quot;A mapper element may only specify a url, resource or class, but not more than one.&quot;);
+          }
+        }
+      }
+    }
+  }</code></pre>
+<h3 id="Package方式解析"><a href="#Package方式解析" class="headerlink" title="Package方式解析"></a>Package方式解析</h3><p>看看<code>configuration.addMappers(mapperPackage)</code>这行代码里面干了啥：</p>
+<pre><code class="org.apache.ibatis.session.Configuration#addMappers(java.lang.String)">  public void addMappers(String packageName) {
+    mapperRegistry.addMappers(packageName);
+  }</code></pre>
+<p>原来是把扫描出的<code>Mapper接口</code>注册到<code>mapperRegistry</code>中，接着来看：</p>
+<pre><code class="org.apache.ibatis.binding.MapperRegistry#addMappers(java.lang.String)">  /**
+   * @since 3.2.2
+   */
+  public void addMappers(String packageName, Class&lt;?&gt; superType) {
+    ResolverUtil&lt;Class&lt;?&gt;&gt; resolverUtil = new ResolverUtil&lt;&gt;();
+    resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
+    Set&lt;Class&lt;? extends Class&lt;?&gt;&gt;&gt; mapperSet = resolverUtil.getClasses();
+    for (Class&lt;?&gt; mapperClass : mapperSet) {
+      addMapper(mapperClass);
+    }
+  }
+
+  /**
+   * @since 3.2.2
+   */
+  public void addMappers(String packageName) {
+    addMappers(packageName, Object.class);
+  }</code></pre>
+<p>后面调用<code>addMappers(String packageName, Class&lt;?&gt; superType)</code>方法并且指定检查的超类是<code>Object.class</code>，该超类对象通过<code>new ResolverUtil.IsA(superType)</code>赋值给<code>IsA implements Test</code>类中的<code>parent</code>属性，用作后面的类型检查。调用<code>ResolverUtil</code>实例的<code>find</code>方法，将匹配的类的Class对象放到<code>ResolverUtil</code>实例的<code>matches</code>集合中：</p>
+<pre><code class="match类">  public ResolverUtil&lt;T&gt; find(Test test, String packageName) {
+    String path = getPackagePath(packageName);
+
+    try {
+      List&lt;String&gt; children = VFS.getInstance().list(path);
+      for (String child : children) {
+        if (child.endsWith(&quot;.class&quot;)) {
+          addIfMatching(test, child);
+        }
+      }
+    } catch (IOException ioe) {
+      log.error(&quot;Could not read package: &quot; + packageName, ioe);
+    }
+
+    return this;
+  }
+
+    protected void addIfMatching(Test test, String fqn) {
+    try {
+      String externalName = fqn.substring(0, fqn.indexOf(&#39;.&#39;)).replace(&#39;/&#39;, &#39;.&#39;);
+      ClassLoader loader = getClassLoader();
+      if (log.isDebugEnabled()) {
+        log.debug(&quot;Checking to see if class &quot; + externalName + &quot; matches criteria [&quot; + test + &quot;]&quot;);
+      }
+
+      Class&lt;?&gt; type = loader.loadClass(externalName);
+      if (test.matches(type)) {
+        matches.add((Class&lt;T&gt;) type);
+      }
+    } catch (Throwable t) {
+      log.warn(&quot;Could not examine class &#39;&quot; + fqn + &quot;&#39;&quot; + &quot; due to a &quot; +
+          t.getClass().getName() + &quot; with message: &quot; + t.getMessage());
+    }
+  }</code></pre>
+<p>回到<code>addMappers(String packageName, Class&lt;?&gt; superType)</code>中，最终把匹配的类注册到<code>org.apache.ibatis.binding.MapperRegistry#knownMappers</code>Map集合中：</p>
+<pre><code class="MapperRegistry#knownMappers">  public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+    if (type.isInterface()) {
+      if (hasMapper(type)) {
+        throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+      }
+      boolean loadCompleted = false;
+      try {
+        knownMappers.put(type, new MapperProxyFactory&lt;&gt;(type));
+        // It&#39;s important that the type is added before the parser is run
+        // otherwise the binding may automatically be attempted by the
+        // mapper parser. If the type is already known, it won&#39;t try.
+        MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+        parser.parse();
+        loadCompleted = true;
+      } finally {
+        if (!loadCompleted) {
+          knownMappers.remove(type);
+        }
+      }
+    }
+  }</code></pre>
+<h3 id="Mapper方式解析"><a href="#Mapper方式解析" class="headerlink" title="Mapper方式解析"></a>Mapper方式解析</h3><p>来看看<code>new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments())</code>里面干了啥：</p>
+<pre><code class="XMLMapperBuilder">  public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource, Map&lt;String, XNode&gt; sqlFragments) {
+    // 这个地方和解析 Configuration 时是差不多的
+    // 然后创建xxxMapper.xml的Document对象
+    this(new XPathParser(inputStream, true, configuration.getVariables(), new XMLMapperEntityResolver()),
+        configuration, resource, sqlFragments);
+  }
+
+  private XMLMapperBuilder(XPathParser parser, Configuration configuration, String resource, Map&lt;String, XNode&gt; sqlFragments) {
+    super(configuration);
+    this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
+    this.parser = parser;
+    this.sqlFragments = sqlFragments;
+    this.resource = resource;
+  }</code></pre>
+<p>因为<code>XMLMapperBuilder extends BaseBuilder</code>，所以看看<code>super(configuration)</code>里干了啥：</p>
+<pre><code class="org.apache.ibatis.builder.BaseBuilder#BaseBuilder">  public BaseBuilder(Configuration configuration) {
+    this.configuration = configuration;
+    this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
+    this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry();
+  }</code></pre>
+<p>从<code>configuration</code>里把<code>typeAliasRegistry、typeHandlerRegistry</code>拿出来赋值给BaseBuilder中的<code>typeAliasRegistry、typeHandlerRegistry</code>。<br><code>MapperBuilderAssistant extends BaseBuilder</code>，看看构造方法：</p>
+<pre><code class="MapperBuilderAssistant(...)">  public MapperBuilderAssistant(Configuration configuration, String resource) {
+    // 这里的super和上面是一样的
+    super(configuration);
+    ErrorContext.instance().resource(resource);
+    this.resource = resource;
+  }</code></pre>
+<p>最后拿到<code>XMLMapperBuilder</code>实例后，调用它的<code>parse()</code>方法：</p>
+<pre><code class="parse()">  public void parse() {
+    // 检查configuration的Set集合loadedResources中是否包含当前的resource
+    if (!configuration.isResourceLoaded(resource)) {
+      // 开始去解析Mapper，将最终的结果集存入configuration中
+      configurationElement(parser.evalNode(&quot;/mapper&quot;));
+      // 保存已解析过的mapper
+      configuration.addLoadedResource(resource);
+      // 将已加载过的Mapper的namespace注册到configuration的mapperRegistry属性中的
+      // knownMappers集合中：
+      // private final Map&lt;Class&lt;?&gt;, MapperProxyFactory&lt;?&gt;&gt; knownMappers = new HashMap&lt;&gt;();
+      bindMapperForNamespace();
+    }
+
+    // 将未完成解析的ResultMaps解析到configuration的resultMaps集合中
+    parsePendingResultMaps();
+    /**
+    * private void parsePendingResultMaps() {
+    *    Collection&lt;ResultMapResolver&gt; incompleteResultMaps = configuration.getIncompleteResultMaps();
+    *    synchronized (incompleteResultMaps) {
+    *        Iterator&lt;ResultMapResolver&gt; iter = incompleteResultMaps.iterator();
+    *        while (iter.hasNext()) {
+    *           try {
+    *               // org.apache.ibatis.builder.ResultMapResolver#resolve
+    *               iter.next().resolve();
+    *               iter.remove();
+    *           } catch (IncompleteElementException e) {
+    *               // ResultMap is still missing a resource...
+    *           }
+    *        }
+    *    }
+    * }
+    */
+    // 缓存解析
+    parsePendingCacheRefs();
+    // SQL解析：select | insert | update | delete
+    // 将未完成解析的SQLStatements解析到configuration的mappedStatements集合中
+    parsePendingStatements();
+    /**
+    * private void parsePendingStatements() {
+    *     Collection&lt;XMLStatementBuilder&gt; incompleteStatements = configuration.getIncompleteStatements();
+    *     synchronized (incompleteStatements) {
+    *         Iterator&lt;XMLStatementBuilder&gt; iter = incompleteStatements.iterator();
+    *         while (iter.hasNext()) {
+    *             try {
+    *                 // org.apache.ibatis.builder.xml.XMLStatementBuilder#parseStatementNode
+    *                 iter.next().parseStatementNode();
+    *                 iter.remove();
+    *             } catch (IncompleteElementException e) {
+    *                 // Statement is still missing a resource...
+    *             }
+    *         }
+    *     }
+    * }
+    */
+  }</code></pre>
+<h4 id="configurationElement-parser-evalNode-“-mapper”"><a href="#configurationElement-parser-evalNode-“-mapper”" class="headerlink" title="configurationElement(parser.evalNode(“/mapper”))"></a>configurationElement(parser.evalNode(“/mapper”))</h4><p><code>org.apache.ibatis.builder.xml.XMLMapperBuilder#configurationElement</code>源码：</p>
+<pre><code class="configurationElement(...)">  private void configurationElement(XNode context) {
+    try {
+      // namespace检查与设置
+      String namespace = context.getStringAttribute(&quot;namespace&quot;);
+      if (namespace == null || namespace.equals(&quot;&quot;)) {
+        throw new BuilderException(&quot;Mapper&#39;s namespace cannot be empty&quot;);
+      }
+      builderAssistant.setCurrentNamespace(namespace);
+      // 二级缓存配置：可以在当前namespace中使用&lt;cache/&gt;开启二级缓存，
+      // 当前空间的缓存只在当前空间有效，如果需要引用其他空间的缓存，则需要配置&lt;cache-ref/&gt;
+      cacheRefElement(context.evalNode(&quot;cache-ref&quot;));
+      cacheElement(context.evalNode(&quot;cache&quot;));
+      // 解析引用外部的参数parameterMap，已经废弃
+      parameterMapElement(context.evalNodes(&quot;/mapper/parameterMap&quot;));
+      // resultMap 节点数据解析，resultMap节点可以配置多个，id区分，将最终的解析结果已
+      // resultMap的id为key，resultMap为value存入configuration的resultMaps集合中
+      resultMapElements(context.evalNodes(&quot;/mapper/resultMap&quot;));
+      // sql节点解析
+      sqlElement(context.evalNodes(&quot;/mapper/sql&quot;));
+      // select|insert|update|delete 节点解析
+      buildStatementFromContext(context.evalNodes(&quot;select|insert|update|delete&quot;));
+    } catch (Exception e) {
+      throw new BuilderException(&quot;Error parsing Mapper XML. The XML location is &#39;&quot; + resource + &quot;&#39;. Cause: &quot; + e, e);
+    }
+  }</code></pre>
+<h5 id="解析ResultMap"><a href="#解析ResultMap" class="headerlink" title="解析ResultMap"></a>解析ResultMap</h5><p>org.apache.ibatis.builder.xml.XMLMapperBuilder#resultMapElements：</p>
+<pre><code class="resultMapElements">  private void resultMapElements(List&lt;XNode&gt; list) throws Exception {
+    for (XNode resultMapNode : list) {
+      try {
+        resultMapElement(resultMapNode);
+      } catch (IncompleteElementException e) {
+        // ignore, it will be retried
+      }
+    }
+  }
+
+  private ResultMap resultMapElement(XNode resultMapNode) throws Exception {
+    return resultMapElement(resultMapNode, Collections.emptyList(), null);
+  }
+
+  private ResultMap resultMapElement(XNode resultMapNode, List&lt;ResultMapping&gt; additionalResultMappings, Class&lt;?&gt; enclosingType) throws Exception {
+    ErrorContext.instance().activity(&quot;processing &quot; + resultMapNode.getValueBasedIdentifier());
+    // 获取ResultMap的类型，我们通常配置的都是type，也即是：JAVA实体类的类型
+    String type = resultMapNode.getStringAttribute(&quot;type&quot;,
+        resultMapNode.getStringAttribute(&quot;ofType&quot;,
+            resultMapNode.getStringAttribute(&quot;resultType&quot;,
+                resultMapNode.getStringAttribute(&quot;javaType&quot;))));
+    // 通过别名或是全限定名获取type的Class对象
+    Class&lt;?&gt; typeClass = resolveClass(type);
+    if (typeClass == null) {
+      // type不配或是配不正确，resolveClass都会报错，所以到不了这个地方，暂不研究
+      typeClass = inheritEnclosingType(resultMapNode, enclosingType);
+    }
+    Discriminator discriminator = null;
+    List&lt;ResultMapping&gt; resultMappings = new ArrayList&lt;&gt;();
+    resultMappings.addAll(additionalResultMappings);
+    List&lt;XNode&gt; resultChildren = resultMapNode.getChildren();
+    for (XNode resultChild : resultChildren) {
+      if (&quot;constructor&quot;.equals(resultChild.getName())) {
+        /** 解析在ResultMap中配置的java实体构造器节点，例如：
+        * &lt;constructor&gt;
+        *   &lt;idArg column=&quot;id&quot; javaType=&quot;int&quot;/&gt;
+        *   &lt;arg column=&quot;username&quot; javaType=&quot;String&quot;/&gt;
+        *   ......
+        * &lt;/constructor&gt;
+        * 使用类似String column = context.getStringAttribute(&quot;column&quot;);方式获取节点数据
+        * 将解析出来的节点数据放入ResultMapping中
+        */
+        processConstructorElement(resultChild, typeClass, resultMappings);
+      } else if (&quot;discriminator&quot;.equals(resultChild.getName())) {
+        /**
+        * 使用结果值来决定使用哪个 resultMap
+        * 同样的将节点的数据放入ResultMapping中，并将ResultMapping结果集存入Discriminator的resultMapping属性中
+        */
+        discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
+      } else {
+        /**
+        * 主要来看看这个buildResultMappingFromContext(resultChild, typeClass, flags)方法，从方法就可以看出，是用于构造ResultMapping，一个result对应就对应一个resultMapping
+        */
+        List&lt;ResultFlag&gt; flags = new ArrayList&lt;&gt;();
+        if (&quot;id&quot;.equals(resultChild.getName())) {
+          flags.add(ResultFlag.ID);
+        }
+        resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
+      }
+    }
+    // resultMap的id
+    String id = resultMapNode.getStringAttribute(&quot;id&quot;,
+            resultMapNode.getValueBasedIdentifier());
+    // 继承于其他resultMap的id
+    String extend = resultMapNode.getStringAttribute(&quot;extends&quot;);
+    // 是否开启/关闭自动映射
+    Boolean autoMapping = resultMapNode.getBooleanAttribute(&quot;autoMapping&quot;);
+    ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
+    try {
+      // 获取ResultMap
+      return resultMapResolver.resolve();
+    } catch (IncompleteElementException  e) {
+      configuration.addIncompleteResultMap(resultMapResolver);
+      throw e;
+    }
+  }
+
+  private ResultMapping buildResultMappingFromContext(XNode context, Class&lt;?&gt; resultType, List&lt;ResultFlag&gt; flags) throws Exception {
+    // 获取配置的各种属性值
+    String property;
+    if (flags.contains(ResultFlag.CONSTRUCTOR)) {
+      property = context.getStringAttribute(&quot;name&quot;);
+    } else {
+      property = context.getStringAttribute(&quot;property&quot;);
+    }
+    String column = context.getStringAttribute(&quot;column&quot;);
+    String javaType = context.getStringAttribute(&quot;javaType&quot;);
+    String jdbcType = context.getStringAttribute(&quot;jdbcType&quot;);
+    String nestedSelect = context.getStringAttribute(&quot;select&quot;);
+    String nestedResultMap = context.getStringAttribute(&quot;resultMap&quot;,
+        processNestedResultMappings(context, Collections.emptyList(), resultType));
+    String notNullColumn = context.getStringAttribute(&quot;notNullColumn&quot;);
+    String columnPrefix = context.getStringAttribute(&quot;columnPrefix&quot;);
+    String typeHandler = context.getStringAttribute(&quot;typeHandler&quot;);
+    String resultSet = context.getStringAttribute(&quot;resultSet&quot;);
+    String foreignColumn = context.getStringAttribute(&quot;foreignColumn&quot;);
+    boolean lazy = &quot;lazy&quot;.equals(context.getStringAttribute(&quot;fetchType&quot;, configuration.isLazyLoadingEnabled() ? &quot;lazy&quot; : &quot;eager&quot;));
+    // 通过别名或全限定名解析java实体类的类型
+    Class&lt;?&gt; javaTypeClass = resolveClass(javaType);
+    // 通过别名或全限定名解析类型处理器的类型
+    Class&lt;? extends TypeHandler&lt;?&gt;&gt; typeHandlerClass = resolveClass(typeHandler);
+    // 通过别名获取jdbc的类型
+    JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
+    // 根据解析出来的属性值构造ResultMapping
+    return builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resultSet, foreignColumn, lazy);
+  }
+
+  org.apache.ibatis.builder.MapperBuilderAssistant#buildResultMapping：
+  public ResultMapping buildResultMapping(
+      Class&lt;?&gt; resultType,
+      String property,
+      String column,
+      Class&lt;?&gt; javaType,
+      JdbcType jdbcType,
+      String nestedSelect,
+      String nestedResultMap,
+      String notNullColumn,
+      String columnPrefix,
+      Class&lt;? extends TypeHandler&lt;?&gt;&gt; typeHandler,
+      List&lt;ResultFlag&gt; flags,
+      String resultSet,
+      String foreignColumn,
+      boolean lazy) {
+    // 解析property对应的java类型
+    Class&lt;?&gt; javaTypeClass = resolveResultJavaType(resultType, property, javaType);
+    // 根据typeHandlerType或javaTypeClass和typeHandlerType从typeHandlerRegistry中获取TypeHandler
+    TypeHandler&lt;?&gt; typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
+    List&lt;ResultMapping&gt; composites;
+    if ((nestedSelect == null || nestedSelect.isEmpty()) &amp;&amp; (foreignColumn == null || foreignColumn.isEmpty())) {
+      composites = Collections.emptyList();
+    } else {
+      composites = parseCompositeColumnName(column);
+    }
+    return new ResultMapping.Builder(configuration, property, column, javaTypeClass)
+        .jdbcType(jdbcType)
+        .nestedQueryId(applyCurrentNamespace(nestedSelect, true))
+        .nestedResultMapId(applyCurrentNamespace(nestedResultMap, true))
+        .resultSet(resultSet)
+        .typeHandler(typeHandlerInstance)
+        .flags(flags == null ? new ArrayList&lt;&gt;() : flags)
+        .composites(composites)
+        .notNullColumns(parseMultipleColumnNames(notNullColumn))
+        .columnPrefix(columnPrefix)
+        .foreignColumn(foreignColumn)
+        .lazy(lazy)
+        .build();
+  }
+
+  private Class&lt;?&gt; resolveResultJavaType(Class&lt;?&gt; resultType, String property, Class&lt;?&gt; javaType) {
+    if (javaType == null &amp;&amp; property != null) {
+      try {
+        /** 
+        * MetaClass.forClass(resultType,configuration.getReflectorFactory())
+        * 就是通过resultType、reflectorFactory构造MetaClass，构造方法：
+        * private MetaClass(Class&lt;?&gt; type, ReflectorFactory reflectorFactory) {
+        *     this.reflectorFactory = reflectorFactory;
+        *     this.reflector = reflectorFactory.findForClass(type);
+        * }
+        * 
+        * org.apache.ibatis.reflection.DefaultReflectorFactory#findForClass方法
+        * public Reflector findForClass(Class&lt;?&gt; type) {
+        *     if (classCacheEnabled) {
+        *          // synchronized (type) removed see issue #461
+        *          // private final ConcurrentMap&lt;Class&lt;?&gt;, Reflector&gt; reflectorMap = new ConcurrentHashMap&lt;&gt;();
+        *          return reflectorMap.computeIfAbsent(type,Reflector::new);
+        *     } else {
+        *          return new Reflector(type);
+        *     }
+        * }
+        * 
+        * public class Reflector {
+        *
+        *     private final Class&lt;?&gt; type;
+        *     private final String[] readablePropertyNames;
+        *     private final String[] writablePropertyNames;
+        *     private final Map&lt;String, Invoker&gt; setMethods = new HashMap&lt;&gt;();
+        *     private final Map&lt;String, Invoker&gt; getMethods = new HashMap&lt;&gt;();
+        *     private final Map&lt;String, Class&lt;?&gt;&gt; setTypes = new HashMap&lt;&gt;();
+        *     private final Map&lt;String, Class&lt;?&gt;&gt; getTypes = new HashMap&lt;&gt;();
+        *     private Constructor&lt;?&gt; defaultConstructor;
+        *
+        *     private Map&lt;String, String&gt; caseInsensitivePropertyMap = new HashMap&lt;&gt;();
+        *
+        *     public Reflector(Class&lt;?&gt; clazz) {
+        *         type = clazz;
+        *         // 添加默认构造器
+        *         addDefaultConstructor(clazz);
+        *         // clazz的所有Get方法
+        *         addGetMethods(clazz);
+        *         // clazz的所有Set方法
+        *         addSetMethods(clazz);
+        *         // clazz的所有属性
+        *         addFields(clazz);
+        *         readablePropertyNames = getMethods.keySet().toArray(new String[0]);
+        *         writablePropertyNames = setMethods.keySet().toArray(new String[0]);
+        *         for (String propName : readablePropertyNames) {
+        *             caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
+        *         }
+        *         for (String propName : writablePropertyNames) {
+        *             caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
+        *         }
+        *     }
+        *     .......
+        * }
+        * 
+        */
+        MetaClass metaResultType = MetaClass.forClass(resultType, configuration.getReflectorFactory());
+        // 通过Reflector获取属性Setter方法的类型，因为从数据库获取到值的时候，
+        // 会通过typeHandler转成property对应的SetterType，将值set进去
+        javaType = metaResultType.getSetterType(property);
+      } catch (Exception e) {
+        //ignore, following null check statement will deal with the situation
+      }
+    }
+    if (javaType == null) {
+      javaType = Object.class;
+    }
+    return javaType;
+  }
+
+  public ResultMapping build() {
+      // lock down collections
+      resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
+      resultMapping.composites = Collections.unmodifiableList(resultMapping.composites);
+      // TypeHandler解析
+      resolveTypeHandler();
+      // 安全性验证
+      validate();
+      return resultMapping;
+  }
+
+  private void resolveTypeHandler() {
+      if (resultMapping.typeHandler == null &amp;&amp; resultMapping.javaType != null) {
+        Configuration configuration = resultMapping.configuration;
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+        resultMapping.typeHandler = typeHandlerRegistry.getTypeHandler(resultMapping.javaType, resultMapping.jdbcType);
+      }
+  }
+
+  private void validate() {
+      // Issue #697: cannot define both nestedQueryId and nestedResultMapId
+      if (resultMapping.nestedQueryId != null &amp;&amp; resultMapping.nestedResultMapId != null) {
+        throw new IllegalStateException(&quot;Cannot define both nestedQueryId and nestedResultMapId in property &quot; + resultMapping.property);
+      }
+      // Issue #5: there should be no mappings without typehandler
+      if (resultMapping.nestedQueryId == null &amp;&amp; resultMapping.nestedResultMapId == null &amp;&amp; resultMapping.typeHandler == null) {
+        throw new IllegalStateException(&quot;No typehandler found for property &quot; + resultMapping.property);
+      }
+      // Issue #4 and GH #39: column is optional only in nested resultmaps but not in the rest
+      if (resultMapping.nestedResultMapId == null &amp;&amp; resultMapping.column == null &amp;&amp; resultMapping.composites.isEmpty()) {
+        throw new IllegalStateException(&quot;Mapping is missing column attribute for property &quot; + resultMapping.property);
+      }
+      if (resultMapping.getResultSet() != null) {
+        int numColumns = 0;
+        if (resultMapping.column != null) {
+          numColumns = resultMapping.column.split(&quot;,&quot;).length;
+        }
+        int numForeignColumns = 0;
+        if (resultMapping.foreignColumn != null) {
+          numForeignColumns = resultMapping.foreignColumn.split(&quot;,&quot;).length;
+        }
+        if (numColumns != numForeignColumns) {
+          throw new IllegalStateException(&quot;There should be the same number of columns and foreignColumns in property &quot; + resultMapping.property);
+        }
+      }
+  }
+
+  最后来看看org.apache.ibatis.builder.ResultMapResolver#resolve：
+  public ResultMap resolve() {
+    return assistant.addResultMap(this.id, this.type, this.extend, this.discriminator, this.resultMappings, this.autoMapping);
+  }
+
+  org.apache.ibatis.builder.MapperBuilderAssistant#addResultMap：
+  public ResultMap addResultMap(
+      String id,
+      Class&lt;?&gt; type,
+      String extend,
+      Discriminator discriminator,
+      List&lt;ResultMapping&gt; resultMappings,
+      Boolean autoMapping) {
+    // 命名空间设置
+    id = applyCurrentNamespace(id, false);
+    extend = applyCurrentNamespace(extend, true);
+    // 解析继承的result
+    if (extend != null) {
+      if (!configuration.hasResultMap(extend)) {
+        throw new IncompleteElementException(&quot;Could not find a parent resultmap with id &#39;&quot; + extend + &quot;&#39;&quot;);
+      }
+      ResultMap resultMap = configuration.getResultMap(extend);
+      List&lt;ResultMapping&gt; extendedResultMappings = new ArrayList&lt;&gt;(resultMap.getResultMappings());
+      extendedResultMappings.removeAll(resultMappings);
+      // Remove parent constructor if this resultMap declares a constructor.
+      boolean declaresConstructor = false;
+      for (ResultMapping resultMapping : resultMappings) {
+        if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
+          declaresConstructor = true;
+          break;
+        }
+      }
+      if (declaresConstructor) {
+        extendedResultMappings.removeIf(resultMapping -&gt; resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR));
+      }
+      resultMappings.addAll(extendedResultMappings);
+    }
+    // 通过解析出来的数据构造resultMap
+    ResultMap resultMap = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping)
+        .discriminator(discriminator)
+        .build();
+    // 将resultMap的id作为key，resultMap作为value保存到Configuration的resultMaps属性中
+    configuration.addResultMap(resultMap);
+    return resultMap;
+  }
+
+  public ResultMap build() {
+      if (resultMap.id == null) {
+        throw new IllegalArgumentException(&quot;ResultMaps must have an id&quot;);
+      }
+      // 存放column
+      resultMap.mappedColumns = new HashSet&lt;&gt;();
+      // 存放property
+      resultMap.mappedProperties = new HashSet&lt;&gt;();
+      // 存放id
+      resultMap.idResultMappings = new ArrayList&lt;&gt;();
+      // 存放构造器
+      resultMap.constructorResultMappings = new ArrayList&lt;&gt;();
+      // 存放整个result结果集
+      resultMap.propertyResultMappings = new ArrayList&lt;&gt;();
+      // 存放构造器参数
+      final List&lt;String&gt; constructorArgNames = new ArrayList&lt;&gt;();
+      // 解析获取到的resultMap.resultMappings
+      for (ResultMapping resultMapping : resultMap.resultMappings) {
+        resultMap.hasNestedQueries = resultMap.hasNestedQueries || resultMapping.getNestedQueryId() != null;
+        resultMap.hasNestedResultMaps = resultMap.hasNestedResultMaps || (resultMapping.getNestedResultMapId() != null &amp;&amp; resultMapping.getResultSet() == null);
+        final String column = resultMapping.getColumn();
+        if (column != null) {
+          resultMap.mappedColumns.add(column.toUpperCase(Locale.ENGLISH));
+        } else if (resultMapping.isCompositeResult()) {
+          for (ResultMapping compositeResultMapping : resultMapping.getComposites()) {
+            final String compositeColumn = compositeResultMapping.getColumn();
+            if (compositeColumn != null) {
+              resultMap.mappedColumns.add(compositeColumn.toUpperCase(Locale.ENGLISH));
+            }
+          }
+        }
+        final String property = resultMapping.getProperty();
+        if (property != null) {
+          resultMap.mappedProperties.add(property);
+        }
+        if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
+          resultMap.constructorResultMappings.add(resultMapping);
+          if (resultMapping.getProperty() != null) {
+            constructorArgNames.add(resultMapping.getProperty());
+          }
+        } else {
+          // 没有构造器就把整个result结果集存起来
+          resultMap.propertyResultMappings.add(resultMapping);
+        }
+        if (resultMapping.getFlags().contains(ResultFlag.ID)) {
+          resultMap.idResultMappings.add(resultMapping);
+        }
+      }
+      if (resultMap.idResultMappings.isEmpty()) {
+        resultMap.idResultMappings.addAll(resultMap.resultMappings);
+      }
+      // 解析实际的构造参数
+      if (!constructorArgNames.isEmpty()) {
+        final List&lt;String&gt; actualArgNames = argNamesOfMatchingConstructor(constructorArgNames);
+        if (actualArgNames == null) {
+          throw new BuilderException(&quot;Error in result map &#39;&quot; + resultMap.id
+              + &quot;&#39;. Failed to find a constructor in &#39;&quot;
+              + resultMap.getType().getName() + &quot;&#39; by arg names &quot; + constructorArgNames
+              + &quot;. There might be more info in debug log.&quot;);
+        }
+        resultMap.constructorResultMappings.sort((o1, o2) -&gt; {
+          int paramIdx1 = actualArgNames.indexOf(o1.getProperty());
+          int paramIdx2 = actualArgNames.indexOf(o2.getProperty());
+          return paramIdx1 - paramIdx2;
+        });
+      }
+
+      // 已解析过的数据不可变
+      // lock down collections
+      resultMap.resultMappings = Collections.unmodifiableList(resultMap.resultMappings);
+      resultMap.idResultMappings = Collections.unmodifiableList(resultMap.idResultMappings);
+      resultMap.constructorResultMappings = Collections.unmodifiableList(resultMap.constructorResultMappings);
+      resultMap.propertyResultMappings = Collections.unmodifiableList(resultMap.propertyResultMappings);
+      resultMap.mappedColumns = Collections.unmodifiableSet(resultMap.mappedColumns);
+      return resultMap;
+  }</code></pre>
+<h5 id="解析sqlElement"><a href="#解析sqlElement" class="headerlink" title="解析sqlElement"></a>解析sqlElement</h5><p>org.apache.ibatis.builder.xml.XMLMapperBuilder#sqlElement：</p>
+<pre><code class="sqlElement">  private void sqlElement(List&lt;XNode&gt; list) {
+    if (configuration.getDatabaseId() != null) {
+      sqlElement(list, configuration.getDatabaseId());
+    }
+    sqlElement(list, null);
+  }
+
+  private void sqlElement(List&lt;XNode&gt; list, String requiredDatabaseId) {
+    for (XNode context : list) {
+      String databaseId = context.getStringAttribute(&quot;databaseId&quot;);
+      String id = context.getStringAttribute(&quot;id&quot;);
+      id = builderAssistant.applyCurrentNamespace(id, false);
+      if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
+        // 将sqlElement保存到org.apache.ibatis.builder.xml.XMLMapperBuilder#sqlFragments 集合中
+        // private final Map&lt;String, XNode&gt; sqlFragments
+        sqlFragments.put(id, context);
+      }
+    }
+  }</code></pre>
+<h5 id="解析select-insert-update-delete"><a href="#解析select-insert-update-delete" class="headerlink" title="解析select | insert | update | delete"></a>解析select | insert | update | delete</h5><pre><code class="buildStatementFromContext">  private void buildStatementFromContext(List&lt;XNode&gt; list) {
+    if (configuration.getDatabaseId() != null) {
+      buildStatementFromContext(list, configuration.getDatabaseId());
+    }
+    buildStatementFromContext(list, null);
+  }
+
+  private void buildStatementFromContext(List&lt;XNode&gt; list, String requiredDatabaseId) {
+    for (XNode context : list) {
+      // org.apache.ibatis.builder.xml.XMLStatementBuilder
+      final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
+      try {
+        statementParser.parseStatementNode();
+      } catch (IncompleteElementException e) {
+        configuration.addIncompleteStatement(statementParser);
+      }
+    }
+  }
+
+  // 开始解析
+  public void parseStatementNode() {
+    String id = context.getStringAttribute(&quot;id&quot;);
+    String databaseId = context.getStringAttribute(&quot;databaseId&quot;);
+
+    if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
+      return;
+    }
+
+    // 获取节点类型
+    // SqlCommandType：UNKNOWN, INSERT, UPDATE, DELETE, SELECT, FLUSH
+    String nodeName = context.getNode().getNodeName();
+    SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+    boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    boolean flushCache = context.getBooleanAttribute(&quot;flushCache&quot;, !isSelect);
+    boolean useCache = context.getBooleanAttribute(&quot;useCache&quot;, isSelect);
+    boolean resultOrdered = context.getBooleanAttribute(&quot;resultOrdered&quot;, false);
+
+    // Include Fragments before parsing
+    // 解析包含的&lt;include/&gt;节点
+    XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+    includeParser.applyIncludes(context.getNode());
+
+     // 解析参数类型
+    String parameterType = context.getStringAttribute(&quot;parameterType&quot;);
+    Class&lt;?&gt; parameterTypeClass = resolveClass(parameterType);
+
+    // 解析数据库语言驱动LanguageDriver：XMLLanguageDriver
+    String lang = context.getStringAttribute(&quot;lang&quot;);
+    LanguageDriver langDriver = getLanguageDriver(lang);
+
+    // 解析selectKey，通常是配置的需要自动生成值的键
+    // Parse selectKey after includes and remove them.
+    processSelectKeyNodes(id, parameterTypeClass, langDriver);
+
+    // Parse the SQL (pre: &lt;selectKey&gt; and &lt;include&gt; were parsed and removed)
+    KeyGenerator keyGenerator;
+    String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
+    keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+    if (configuration.hasKeyGenerator(keyStatementId)) {
+      keyGenerator = configuration.getKeyGenerator(keyStatementId);
+    } else {
+      keyGenerator = context.getBooleanAttribute(&quot;useGeneratedKeys&quot;,
+          configuration.isUseGeneratedKeys() &amp;&amp; SqlCommandType.INSERT.equals(sqlCommandType))
+          ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+    }
+
+    /** 
+    * 解析SQL
+    * langDriver.createSqlSource(configuration, context, parameterTypeClass)
+    * 来分析下：
+    * org.apache.ibatis.scripting.xmltags.XMLLanguageDriver#createSqlSource
+    * public SqlSource createSqlSource(Configuration configuration, XNode script, Class&lt;?&gt; parameterType) {
+    *     XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
+    *     return builder.parseScriptNode();
+    * }
+    *
+    * org.apache.ibatis.scripting.xmltags.XMLScriptBuilder#XMLScriptBuilder
+    * public XMLScriptBuilder(Configuration configuration, XNode context, Class&lt;?&gt; parameterType) {
+    *     /**
+    *     * super(configuration)
+    *     * 配置赋值 XMLScriptBuilder extends org.apache.ibatis.builder.BaseBuilder#BaseBuilder
+    *     * public BaseBuilder(Configuration configuration) {
+    *     *     this.configuration = configuration;
+    *     *     this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
+    *     *     this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry();
+    *     * }
+    *     */
+    *     super(configuration);
+    *     this.context = context;
+    *     this.parameterType = parameterType;
+    *     initNodeHandlerMap();
+    * }
+    * 动态SQL处理初始化
+    * private void initNodeHandlerMap() {
+    *     nodeHandlerMap.put(&quot;trim&quot;, new TrimHandler());
+    *     nodeHandlerMap.put(&quot;where&quot;, new WhereHandler());
+    *     nodeHandlerMap.put(&quot;set&quot;, new SetHandler());
+    *     nodeHandlerMap.put(&quot;foreach&quot;, new ForEachHandler());
+    *     nodeHandlerMap.put(&quot;if&quot;, new IfHandler());
+    *     nodeHandlerMap.put(&quot;choose&quot;, new ChooseHandler());
+    *     nodeHandlerMap.put(&quot;when&quot;, new IfHandler());
+    *     nodeHandlerMap.put(&quot;otherwise&quot;, new OtherwiseHandler());
+    *     nodeHandlerMap.put(&quot;bind&quot;, new BindHandler());
+    * }
+    * 
+    * org.apache.ibatis.scripting.xmltags.XMLScriptBuilder#parseScriptNode
+    * public SqlSource parseScriptNode() {
+    *     MixedSqlNode rootSqlNode = parseDynamicTags(context);
+    *     SqlSource sqlSource;
+    *     // DynamicSqlSource、RawSqlSourc、StaticSqlSource均实现了SqlSource接口
+    *     if (isDynamic) {
+    *         // 直接构造一个DynamicSqlSource对象，对于&quot;${}&quot;的动态SQL直接构造返回，
+    *         // 不会对其进行解析，因此容易造成SQL注入攻击
+    *         sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
+    *         /**
+    *         * public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
+    *         *    this.configuration = configuration;
+    *         *    this.rootSqlNode = rootSqlNode;
+    *         * }
+    *         */
+    *     } else {
+    *         // 在RawSqlSource中对sql进行解析，对于&quot;#{}&quot;每次都会进行解析，可以预防SQL注入攻击
+    *         sqlSource = new RawSqlSource(configuration, rootSqlNode, parameterType);
+    *         /**
+    *         * org.apache.ibatis.scripting.defaults.RawSqlSource#RawSqlSource
+    *         * public RawSqlSource(Configuration configuration, SqlNode rootSqlNode, Class&lt;?&gt; parameterType) {
+    *         *     this(configuration, getSql(configuration, rootSqlNode), parameterType);
+    *         * }
+    *         * public RawSqlSource(Configuration configuration, String sql, Class&lt;?&gt; parameterType) {
+    *         *     SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
+    *         *     Class&lt;?&gt; clazz = parameterType == null ? Object.class : parameterType;
+    *         *     this.sqlSource = sqlSourceParser.parse(sql, clazz, new HashMap());
+    *         * }
+    *         *
+    *         * org.apache.ibatis.builder.SqlSourceBuilder#parse
+    *         * public SqlSourceBuilder(Configuration configuration) {
+    *         *     // 初始化configuration、typeAliasRegistry、typeHandlerRegistry
+    *         *     super(configuration);
+    *         * }
+    *         *
+    *         * public SqlSource parse(String originalSql, Class&lt;?&gt; parameterType, Map&lt;String, Object&gt; additionalParameters) {
+    *         *     SqlSourceBuilder.ParameterMappingTokenHandler handler = new SqlSourceBuilder.ParameterMappingTokenHandler(this.configuration, parameterType, additionalParameters);
+    *         *     GenericTokenParser parser = new GenericTokenParser(&quot;#{&quot;, &quot;}&quot;, handler);
+    *         *     // 解析占位符&quot;#{}&quot;，构造SQL
+    *         *     String sql = parser.parse(originalSql);
+    *         *     // 返回解析出的静态SQL
+    *         *     return new StaticSqlSource(this.configuration, sql, handler.getParameterMappings());
+    *         * }
+    *         */
+    *     }
+    *     return sqlSource;
+    * }
+    * 
+    * parseDynamicTags(context) 
+    * 解析SQL放入contents集合
+    * SQL会被解析成3个部分：select、查询的属性、剩余的一段，例如：
+    * select id,name,email from user where id = 1
+    * 解析出来后就是：
+    *   1、select
+    *   2、id,name,email
+    *   3、from user where id = 1
+    * 
+    * protected MixedSqlNode parseDynamicTags(XNode node) {
+    *     List&lt;SqlNode&gt; contents = new ArrayList&lt;&gt;();
+    *     NodeList children = node.getNode().getChildNodes();
+    *     for (int i = 0; i &lt; children.getLength(); i++) {
+    *         XNode child = node.newXNode(children.item(i));
+    *         // 节点类型：org.w3c.dom.Node
+    *         if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
+    *             String data = child.getStringBody(&quot;&quot;);
+    *             TextSqlNode textSqlNode = new TextSqlNode(data);
+    *             // 根据是否包含&quot;${}&quot;判断是否是动态SQL
+    *             if (textSqlNode.isDynamic()) {
+    *                 contents.add(textSqlNode);
+    *                 isDynamic = true;
+    *             } else {
+    *                 contents.add(new StaticTextSqlNode(data));
+    *             }
+    *         } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628
+    *             String nodeName = child.getNode().getNodeName();
+    *             // 根据节点名称从initNodeHandlerMap()中获取相应的SQL动态处理器
+    *             NodeHandler handler = nodeHandlerMap.get(nodeName);
+    *             if (handler == null) {
+    *                 throw new BuilderException(&quot;Unknown element &lt;&quot; + nodeName + &quot;&gt; in SQL statement.&quot;);
+    *             }
+    *             // 使用获取到的处理器处理动态SQL
+    *             handler.handleNode(child, contents);
+    *             // 如果节点类型是：Node.ELEMENT_NODE，也会判定为动态SQL
+    *             isDynamic = true;
+    *         }
+    *     }
+    *     // 将contents放入MixedSqlNode的contents集合中
+    *     /**
+    *     * org.apache.ibatis.scripting.xmltags.MixedSqlNode#MixedSqlNode
+    *     * public class MixedSqlNode implements SqlNode {
+    *     *    private final List&lt;SqlNode&gt; contents;
+    *     *    public MixedSqlNode(List&lt;SqlNode&gt; contents) {
+    *     *        this.contents = contents;
+    *     *    }
+    *     *
+    *     *    @Override
+    *     *    public boolean apply(DynamicContext context) {
+    *     *        contents.forEach(node -&gt; node.apply(context));
+    *     *        return true;
+    *     *    }
+    *     * }
+    *     */
+    *     return new MixedSqlNode(contents);
+    * }
+    *
+    */
+    SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+    // 获取声明类型StatementType：STATEMENT, PREPARED, CALLABLE
+    StatementType statementType = StatementType.valueOf(context.getStringAttribute(&quot;statementType&quot;, StatementType.PREPARED.toString()));
+    // 获取设置的其他的属性
+    Integer fetchSize = context.getIntAttribute(&quot;fetchSize&quot;);
+    Integer timeout = context.getIntAttribute(&quot;timeout&quot;);
+    String parameterMap = context.getStringAttribute(&quot;parameterMap&quot;);
+    String resultType = context.getStringAttribute(&quot;resultType&quot;);
+    Class&lt;?&gt; resultTypeClass = resolveClass(resultType);
+    String resultMap = context.getStringAttribute(&quot;resultMap&quot;);
+    String resultSetType = context.getStringAttribute(&quot;resultSetType&quot;);
+    ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
+    if (resultSetTypeEnum == null) {
+      resultSetTypeEnum = configuration.getDefaultResultSetType();
+    }
+    String keyProperty = context.getStringAttribute(&quot;keyProperty&quot;);
+    String keyColumn = context.getStringAttribute(&quot;keyColumn&quot;);
+    String resultSets = context.getStringAttribute(&quot;resultSets&quot;);
+
+    // 构造SQL的MappedStatement，MappedStatement是啥呢，往下看
+    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
+        fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
+        resultSetTypeEnum, flushCache, useCache, resultOrdered,
+        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
+  }
+
+  /**
+  * org.apache.ibatis.builder.MapperBuilderAssistant#addMappedStatement
+  * // MappedStatement就是用于存放解析出来的每个SQL的元数据信息，看看构造参数就知道了哈
+  * public MappedStatement addMappedStatement(
+  *    String id,
+  *    SqlSource sqlSource,
+  *    StatementType statementType,
+  *    SqlCommandType sqlCommandType,
+  *    Integer fetchSize,
+  *    Integer timeout,
+  *    String parameterMap,
+  *    Class&lt;?&gt; parameterType,
+  *    String resultMap,
+  *    Class&lt;?&gt; resultType,
+  *    ResultSetType resultSetType,
+  *    boolean flushCache,
+  *    boolean useCache,
+  *    boolean resultOrdered,
+  *    KeyGenerator keyGenerator,
+  *    String keyProperty,
+  *    String keyColumn,
+  *    String databaseId,
+  *    LanguageDriver lang,
+  *    String resultSets) {
+  *
+  *  if (unresolvedCacheRef) {
+  *    throw new IncompleteElementException(&quot;Cache-ref not yet resolved&quot;);
+  *  }
+  *
+  *  id = applyCurrentNamespace(id, false);
+  *  boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+  *
+  *  MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlSource, sqlCommandType)
+  *      .resource(resource)
+  *      .fetchSize(fetchSize)
+  *      .timeout(timeout)
+  *      .statementType(statementType)
+  *      .keyGenerator(keyGenerator)
+  *      .keyProperty(keyProperty)
+  *      .keyColumn(keyColumn)
+  *      .databaseId(databaseId)
+  *      .lang(lang)
+  *      .resultOrdered(resultOrdered)
+  *      .resultSets(resultSets)
+  *      .resultMaps(getStatementResultMaps(resultMap, resultType, id))
+  *      .resultSetType(resultSetType)
+  *      .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
+  *      .useCache(valueOrDefault(useCache, isSelect))
+  *      .cache(currentCache);
+  *
+  *  ParameterMap statementParameterMap = getStatementParameterMap(parameterMap, parameterType, id);
+  *  /**
+  *  * private ParameterMap getStatementParameterMap(
+  *  *   String parameterMapName,
+  *  *   Class&lt;?&gt; parameterTypeClass,
+  *  *   String statementId) {
+  *  *     parameterMapName = applyCurrentNamespace(parameterMapName, true);
+  *  *     ParameterMap parameterMap = null;
+  *  *       if (parameterMapName != null) {
+  *  *          try {
+  *  *              parameterMap = configuration.getParameterMap(parameterMapName);
+  *  *          } catch (IllegalArgumentException e) {
+  *  *              throw new IncompleteElementException(&quot;Could not find parameter map &quot; + parameterMapName, e);
+  *  *          }
+  *  *       } else if (parameterTypeClass != null) {
+  *  *          List&lt;ParameterMapping&gt; parameterMappings = new ArrayList&lt;&gt;();
+  *  *          parameterMap = new ParameterMap.Builder(configuration, statementId + &quot;-Inline&quot;, parameterTypeClass, parameterMappings).build();
+  *  *       }
+  *  *   return parameterMap;
+  *  * }
+  *  */
+  *  if (statementParameterMap != null) {
+  *    statementBuilder.parameterMap(statementParameterMap);
+  *  }
+  *
+  *  MappedStatement statement = statementBuilder.build();
+  *  /**
+  *  * org.apache.ibatis.mapping.MappedStatement.Builder#build
+  *  * public MappedStatement build() {
+  *  *   assert mappedStatement.configuration != null;
+  *  *   assert mappedStatement.id != null;
+  *  *   assert mappedStatement.sqlSource != null;
+  *  *   assert mappedStatement.lang != null;
+  *  *   // 解析出来的结果就不允许改变了，否则会导致数据一致性问题
+  *  *   mappedStatement.resultMaps = Collections.unmodifiableList(mappedStatement.resultMaps);
+  *  *   return mappedStatement;
+  *  * }
+  *  */
+  *  // 最终把数据放到configuration的mappedStatements属性中：
+  *  // protected final Map&lt;String, MappedStatement&gt; mappedStatements = new StrictMap&lt;MappedStatement&gt;(...)
+  *  configuration.addMappedStatement(statement);
+  *  return statement;
+  * }
+  *
+  */</code></pre>
+<h3 id="资源限定符（URL）方式解析"><a href="#资源限定符（URL）方式解析" class="headerlink" title="资源限定符（URL）方式解析"></a>资源限定符（URL）方式解析</h3><p>这种方式其实就是和Mapper方式解析是一样的啦，就是数据的来源不一样而已！</p>
+<h3 id="全限定类名方式解析"><a href="#全限定类名方式解析" class="headerlink" title="全限定类名方式解析"></a>全限定类名方式解析</h3><p>这种方式也很简单，直接把类加载出来注册到configuration的属性mapperRegistry中的org.apache.ibatis.binding.MapperRegistry#knownMappers属性中</p>
+<h2 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h2><p>构造<code>SqlSessionFactory</code>的过程就是对配置文件进行解析的过程，然后根据配置文件返回一个<code>DefaultSqlSessionFactory</code>。配置文件的解析主要涉及：</p>
+<ul>
+<li><p>typeAliases的解析<br><code>结果注册到：org.apache.ibatis.type.TypeAliasRegistry#typeAliases</code>  </p>
+</li>
+<li><p>plugins的解析<br><code>结果注册到：org.apache.ibatis.plugin.InterceptorChain#interceptors</code></p>
+</li>
+<li><p>environments的解析：</p>
+<ul>
+<li>多数据源的解析</li>
+</ul>
+<p><code>结果注册到：org.apache.ibatis.session.Configuration#environment</code>  </p>
+</li>
+<li><p>typeHandlers的解析  </p>
+<ul>
+<li><p>如果JavaType不为null，其中key为javatype<br><code>注册到org.apache.ibatis.type.TypeHandlerRegistry#typeHandlerMap(private final Map&lt;Type, Map&lt;JdbcType, TypeHandler&lt;?&gt;&gt;&gt; typeHandlerMap = new ConcurrentHashMap&lt;&gt;())</code></p>
+</li>
+<li><p>如果JavaType为null，其中key为handle的type<br><code>注册到org.apache.ibatis.type.TypeHandlerRegistry#allTypeHandlersMap(private final Map&lt;Class&lt;?&gt;, TypeHandler&lt;?&gt;&gt; allTypeHandlersMap = new HashMap&lt;&gt;())</code>  </p>
+</li>
+</ul>
+</li>
+<li><p>mappers的解析</p>
+<ul>
+<li><p>parameterMaps的解析<br><code>结果注册到：org.apache.ibatis.session.Configuration#parameterMaps</code></p>
+</li>
+<li><p>resultMap的解析<br><code>结果注册到：org.apache.ibatis.session.Configuration#resultMaps</code>  </p>
+</li>
+<li><p>sql节点的解析<br><code>结果注册到：org.apache.ibatis.builder.xml.XMLMapperBuilder#sqlFragments</code></p>
+</li>
+<li><p>select | insert | update | delete的解析</p>
+<ul>
+<li>动态SQL与静态SQL的解析</li>
+<li>区别${} 和 #{}的解析 </li>
+</ul>
+<p><code>结果注册到：org.apache.ibatis.session.Configuration#mappedStatements</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>以上数据解析出来之后，最终的结果都会汇总到configuration中，也就是说以上解析出来的结果在configuration中都有一个属性与之对应。</p>
+
+        </div>
+        <!-- .entry-content -->
+        <div class="single-reward">
+          <div class="reward-open">赏<div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/alipay.jpg"></li>
+                <li class="wechat-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/wechat.jpg"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+        
+          
+            <div class="post-nepre full next">
+          
+            <a href="/2019/10/29/tech-mybatis-introduction/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/introduction.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/introduction.jpeg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                MyBatis介绍及基本用法</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+<!--
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz",
+        appKey: "mgOpfzbkHYqU92CV4IDlAUHQ",
+        path: window.location.pathname,
+        placeholder: "你是我一生只会遇见一次的惊喜 ..."
+      })
+  }
+</script>
+
+-->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg" itemprop="image" alt="多多" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">多多</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>一个好奇的人</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+
+
+    </div>    
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 duoduo<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/disqus-preloader.svg">
+      </div>
+<!-- 
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse"></i>
+        duoduo's litter house
+      </p>
+ -->
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+<!--
+         <span style="color: #b9b9b9;">
+           <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block" ></i>
+         </span>
+-->
+         <span style="color: #b9b9b9;">
+           <a target="_blank" rel="nofollow" href="https://github.com/bruceting"><i class="fa fa-github" style="/* color: #ffc0cb; */display:inline-block;font-size: x-large;"></i></a>
+         </span>
+
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse" style="color: #e74c3c;"></i>
+        duoduo's litter house
+      </p>
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="fa fa-snowflake-o rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>
+        </span>
+<!--        <span style="color: #b9b9b9;">Powered by Hexo</span>
+-->
+<!--
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Hosted by Coding Pages</a>
+        </span>
+ -->
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+
+<!-- live2d -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/bruceting/live2d-widget/autoload.js"></script> -->
+
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">たくさん</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+      
+        <a href="http://github.com/BruceTing" class="fa fa-github" target="_blank" style="color: #333; margin-left:20px"></a>
+      
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=954655431&site=qq&menu=yes" class="fa fa-qq" target="_blank" style="color: #25c6fe; margin-left:20px"></a>
+      
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/tech/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  技术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/life/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/thought/">
+                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                  随想
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/source/">
+                  <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                  资源
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/reprint/">
+                  <i class="fa fa-book" aria-hidden="true"></i>
+                  转载
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我？
+                </a>
+              </li>
+            
+              <li>
+                <a href="/atom.xml">
+                  <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                  RSS
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019 hexo-sakura</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+<style>
+  .aplayer .aplayer-lrc {
+    height: 35px;
+  }
+  .aplayer .aplayer-lrc p{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18px !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: #FF1493;
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    left: -66px !important;
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer .aplayer-lrc.aplayer-lrc-hide {
+      display:none !important;
+  }
+  .aplayer.aplayer-fixed .lrc-show {
+    display: block;
+    background: rgba(255, 255, 255, 0.8);
+  }
+</style>
+<div class="aplayer"
+
+    data-id="2660651585"
+
+    data-server="netease"
+
+    data-type="playlist"
+
+    data-fixed="true"
+
+    data-autoplay="false"
+
+    data-loop="all"
+
+    data-order="random"
+
+    data-preload="auto"
+
+    data-volume="0.7"
+
+    data-mutex="true"
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/meting@1.2/dist/Meting.min.js"></script>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-button').hasClass('aplayer-play')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } else {
+        $('.aplayer-lrc').addClass('lrc-show');
+      }
+    })
+  });
+</script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/haru01.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

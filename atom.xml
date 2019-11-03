@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="/"/>
-  <updated>2019-10-30T16:12:21.952Z</updated>
+  <updated>2019-11-03T15:03:05.165Z</updated>
   <id>/</id>
   
   <author>
@@ -17,11 +17,31 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>MyBatis源码分析之SqlSessionFactory</title>
+    <link href="/2019/11/03/tech-mybatis-sqlSessionFactory/"/>
+    <id>/2019/11/03/tech-mybatis-sqlSessionFactory/</id>
+    <published>2019-11-03T07:30:10.000Z</published>
+    <updated>2019-11-03T15:03:05.165Z</updated>
+    
+    <summary type="html">
+    
+      源码分析SqlSessionFactory的构造过程，包括Environments、Plugins、TypeHandlers、ResultMaps、Mappers等的解析过程。
+    
+    </summary>
+    
+      <category term="tech" scheme="/categories/tech/"/>
+    
+    
+      <category term="mybatis" scheme="/tags/mybatis/"/>
+    
+  </entry>
+  
+  <entry>
     <title>MyBatis介绍及基本用法</title>
     <link href="/2019/10/29/tech-mybatis-introduction/"/>
     <id>/2019/10/29/tech-mybatis-introduction/</id>
     <published>2019-10-29T07:30:10.000Z</published>
-    <updated>2019-10-30T16:12:21.952Z</updated>
+    <updated>2019-11-03T14:54:26.096Z</updated>
     
     <summary type="html">
     
@@ -123,7 +143,7 @@
     <link href="/2019/10/18/thought-introduction/"/>
     <id>/2019/10/18/thought-introduction/</id>
     <published>2019-10-18T10:08:08.000Z</published>
-    <updated>2019-10-31T14:15:16.063Z</updated>
+    <updated>2019-11-01T14:13:47.243Z</updated>
     
     <summary type="html">
     
