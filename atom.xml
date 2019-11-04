@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="/"/>
-  <updated>2019-11-03T15:03:05.165Z</updated>
+  <updated>2019-11-04T13:48:23.354Z</updated>
   <id>/</id>
   
   <author>
@@ -15,6 +15,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MyBatis源码分析之SQL执行流程</title>
+    <link href="/2019/11/04/tech-mybatis-crud/"/>
+    <id>/2019/11/04/tech-mybatis-crud/</id>
+    <published>2019-11-04T07:30:10.000Z</published>
+    <updated>2019-11-04T13:48:23.354Z</updated>
+    
+    <summary type="html">
+    
+      源码分析CRUD执行流程
+    
+    </summary>
+    
+      <category term="tech" scheme="/categories/tech/"/>
+    
+    
+      <category term="mybatis" scheme="/tags/mybatis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MyBatis源码分析之Mapper</title>
+    <link href="/2019/11/04/tech-mybatis-mapper/"/>
+    <id>/2019/11/04/tech-mybatis-mapper/</id>
+    <published>2019-11-04T03:30:30.000Z</published>
+    <updated>2019-11-04T13:58:12.027Z</updated>
+    
+    <summary type="html">
+    
+      通过源码分析怎么获取Mapper接口实例
+    
+    </summary>
+    
+      <category term="tech" scheme="/categories/tech/"/>
+    
+    
+      <category term="mybatis" scheme="/tags/mybatis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MyBatis源码分析之SqlSession</title>
+    <link href="/2019/11/04/tech-mybatis-sqlSession/"/>
+    <id>/2019/11/04/tech-mybatis-sqlSession/</id>
+    <published>2019-11-04T02:10:10.000Z</published>
+    <updated>2019-11-04T13:53:20.537Z</updated>
+    
+    <summary type="html">
+    
+      源码分析TransactionFactory、Executor以及SqlSession的构造过程
+    
+    </summary>
+    
+      <category term="tech" scheme="/categories/tech/"/>
+    
+    
+      <category term="mybatis" scheme="/tags/mybatis/"/>
+    
+  </entry>
   
   <entry>
     <title>MyBatis源码分析之SqlSessionFactory</title>

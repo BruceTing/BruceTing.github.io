@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">MyBatis源码分析之SQL执行流程 | DuoDuo</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "たくさん";
+  mashiro_option.author_name = "たくさん";
+  mashiro_option.site_url = "https://www.yeahme.cn";
+  mashiro_option.v_appId = "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz";
+  mashiro_option.v_appKey = "mgOpfzbkHYqU92CV4IDlAUHQ";
+  mashiro_option.mathjax = "0";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(1).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(2).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(3).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(4).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(5).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(6).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(7).jpg.webp,https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/cover/(8).jpg.webp".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dim">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="https://www.yeahme.cn">
+          <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>Future is comming!</p>
+<!--
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/BruceTing" target="_blank" class="social-github" title="github">
+                    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/social/github.png">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+-->
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+
+    <div id="page" class="site wrapper">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono"></span>
+            <span class="shironeko">たくさん</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/tech/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          技术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/life/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/thought/">
+                          <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                          随想
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/source/">
+                          <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                          资源
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/reprint/">
+                          <i class="fa fa-book" aria-hidden="true"></i>
+                          转载
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我？
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/atom.xml">
+                          <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                          RSS
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/crud.jpeg);" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/crud.jpeg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      MyBatis源码分析之SQL执行流程</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">多多</a>
+        </span>
+        <span class="bull">
+        ·</span>
+        2019-11-4<span class="bull">
+        ·</span>
+      <span id="busuanzi_value_page_pv"></span>次阅读</p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h2 id="CRUD主流程"><a href="#CRUD主流程" class="headerlink" title="CRUD主流程"></a>CRUD主流程</h2><p>先把主类<code>MyBatisTest</code>代码粘以下：</p>
+<pre><code class="MyBatisTest">public class MyBatisTest {
+
+    public static void main(String[] args) throws Exception {
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserDAO mapper = session.getMapper(UserDAO.class);
+            User user = mapper.selectUser(1L);
+            System.out.println(user.toString());
+        }
+
+    }
+
+}</code></pre>
+<p>以<code>select</code>为例来看看<code>mapper.selectUser(1L)</code>怎么执行的。<br>在<code>session.getMapper(UserDAO.class)</code>中获取到的是一个<code>MapperProxy</code>的代理实例，那么就毫无疑问的会调用到<code>MapperProxy</code>的<code>invoke(...)</code>方法：</p>
+<pre><code class="org.apache.ibatis.binding.MapperProxy#invoke(...)">  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    try {
+      if (Object.class.equals(method.getDeclaringClass())) {
+        return method.invoke(this, args);
+      } else if (method.isDefault()) {
+        if (privateLookupInMethod == null) {
+          return invokeDefaultMethodJava8(proxy, method, args);
+        } else {
+          return invokeDefaultMethodJava9(proxy, method, args);
+        }
+      }
+    } catch (Throwable t) {
+      throw ExceptionUtil.unwrapThrowable(t);
+    }
+    // 构造MapperMethod实例，调用它的execute方法执行
+    final MapperMethod mapperMethod = cachedMapperMethod(method);
+    return mapperMethod.execute(sqlSession, args);
+  }</code></pre>
+<p>看看<code>cachedMapperMethod(method)</code>方法：</p>
+<pre><code class="cachedMapperMethod(method)">  private MapperMethod cachedMapperMethod(Method method) {
+    // 把method作为key，mapperMethod实例作为value缓存起来
+    // 核心在MapperMethod构造中
+    return methodCache.computeIfAbsent(method,
+        k -&gt; new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
+  }</code></pre>
+<p>继续看看<code>MapperMethod</code>源码：</p>
+<pre><code class="new">  public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) {
+    // 构造SqlCommand实例
+    this.command = new SqlCommand(config, mapperInterface, method);
+    /**
+    * org.apache.ibatis.binding.MapperMethod.SqlCommand#SqlCommand：
+    * public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) {
+    *     // 获取方法名
+    *     final String methodName = method.getName();
+    *     // 获取方法所在类的类型
+    *     final Class&lt;?&gt; declaringClass = method.getDeclaringClass();
+    *     // 从Configuration中获取MappedStatement
+    *     // Map&lt;String, MappedStatement&gt; mappedStatements
+    *     // key：mapperInterface.getName() + &quot;.&quot; + methodName
+    *     MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass, configuration);
+    *     if (ms == null) {
+    *         if (method.getAnnotation(Flush.class) != null) {
+    *             name = null;
+    *             type = SqlCommandType.FLUSH;
+    *         } else {
+    *             throw new BindingException(&quot;Invalid bound statement (not found): &quot; + mapperInterface.getName() + &quot;.&quot; + methodName);
+    *         }
+    *      } else {
+    *          // 方法全限定名，例：
+    *          // com.springboot.springbootmybatis.dao.UserDAO.selectUser
+    *          name = ms.getId();
+    *          // SQL类型，例：SELECT
+    *          type = ms.getSqlCommandType();
+    *          if (type == SqlCommandType.UNKNOWN) {
+    *              throw new BindingException(&quot;Unknown execution method for: &quot; + name);
+    *          }
+    *     }
+    * }
+    */
+
+    // 获取方法签名信息
+    this.method = new MethodSignature(config, mapperInterface, method);
+    /**
+    * org.apache.ibatis.binding.MapperMethod.MethodSignature#MethodSignature
+    * public MethodSignature(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) {
+    *     // 方法返回值类型解析
+    *     Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
+    *     if (resolvedReturnType instanceof Class&lt;?&gt;) {
+    *         this.returnType = (Class&lt;?&gt;) resolvedReturnType;
+    *     } else if (resolvedReturnType instanceof ParameterizedType) {
+    *         this.returnType = (Class&lt;?&gt;) ((ParameterizedType) resolvedReturnType).getRawType();
+    *     } else {
+    *         this.returnType = method.getReturnType();
+    *     }
+    *     this.returnsVoid = void.class.equals(this.returnType);
+    *     this.returnsMany = configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
+    *     this.returnsCursor = Cursor.class.equals(this.returnType);
+    *     this.returnsOptional = Optional.class.equals(this.returnType);
+    *     this.mapKey = getMapKey(method);
+    *     this.returnsMap = this.mapKey != null;
+    *     this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
+    *     this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+    *     // Sql的参数解析，将参数根据索引位置以及参数名封装到
+    *     // org.apache.ibatis.reflection.ParamNameResolver#names中，为后续占位符替换做准备
+    *     // private final SortedMap&lt;Integer, String&gt; names
+    *     // 例：select id, name from User where id = ?
+    *     // 那么names中就是：names.put(0, &quot;id&quot;)
+    *     this.paramNameResolver = new ParamNameResolver(configuration, method);
+    * }
+    */
+  }</code></pre>
+<p>获取到<code>MapperMethod</code>的实例之后，就调用它的<code>execute(...)</code>方法执行：</p>
+<pre><code class="execute(...)">  public Object execute(SqlSession sqlSession, Object[] args) {
+    Object result;
+    switch (command.getType()) {
+      case INSERT: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.insert(command.getName(), param));
+        break;
+      }
+      case UPDATE: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.update(command.getName(), param));
+        break;
+      }
+      case DELETE: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.delete(command.getName(), param));
+        break;
+      }
+      case SELECT:
+        // 根据返回值类型，决定调用哪一个查询方法
+        if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
+          executeWithResultHandler(sqlSession, args);
+          result = null;
+        } else if (method.returnsMany()) {
+          result = executeForMany(sqlSession, args);
+        } else if (method.returnsMap()) {
+          result = executeForMap(sqlSession, args);
+        } else if (method.returnsCursor()) {
+          result = executeForCursor(sqlSession, args);
+        } else {
+          Object param = method.convertArgsToSqlCommandParam(args);
+          result = sqlSession.selectOne(command.getName(), param);
+          if (method.returnsOptional()
+              &amp;&amp; (result == null || !method.getReturnType().equals(result.getClass()))) {
+            result = Optional.ofNullable(result);
+          }
+        }
+        break;
+      case FLUSH:
+        result = sqlSession.flushStatements();
+        break;
+      default:
+        throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName()
+          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    return result;
+  }</code></pre>
+<p>根据<code>command.getType()</code>，调用相应的<code>case xxx</code>片段执行后，获取执行结果返回。</p>
+<h2 id="INSERT、UPDATE、DELETE"><a href="#INSERT、UPDATE、DELETE" class="headerlink" title="INSERT、UPDATE、DELETE"></a>INSERT、UPDATE、DELETE</h2><pre><code class="execute(...)">  public Object execute(SqlSession sqlSession, Object[] args) {
+    Object result;
+    switch (command.getType()) {
+      case INSERT: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.insert(command.getName(), param));
+        break;
+      }
+      case UPDATE: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.update(command.getName(), param));
+        break;
+      }
+      case DELETE: {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = rowCountResult(sqlSession.delete(command.getName(), param));
+        break;
+      }
+      ......
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName()
+          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    return result;
+  }</code></pre>
+<h3 id="method-convertArgsToSqlCommandParam-args"><a href="#method-convertArgsToSqlCommandParam-args" class="headerlink" title="method.convertArgsToSqlCommandParam(args)"></a>method.convertArgsToSqlCommandParam(args)</h3><p>构造占位符参数值，为后续的占位符替换做准备，参数的构造调用org.apache.ibatis.binding.MapperMethod.MethodSignature#convertArgsToSqlCommandParam方法：</p>
+<pre><code class="convertArgsToSqlCommandParam(Object[]">    // 很显然是从paramNameResolver中将占位符参数构造出来
+  public Object convertArgsToSqlCommandParam(Object[] args) {
+      return paramNameResolver.getNamedParams(args);
+  }
+
+  // 构造占位符参数
+  // param.put(entry.getValue(), args[entry.getKey()])
+  // key：参数名称，value：参数值
+  public Object getNamedParams(Object[] args) {
+    final int paramCount = names.size();
+    if (args == null || paramCount == 0) {
+      return null;
+    } else if (!hasParamAnnotation &amp;&amp; paramCount == 1) {
+      return args[names.firstKey()];
+    } else {
+      final Map&lt;String, Object&gt; param = new ParamMap&lt;&gt;();
+      int i = 0;
+      for (Map.Entry&lt;Integer, String&gt; entry : names.entrySet()) {
+        param.put(entry.getValue(), args[entry.getKey()]);
+        // add generic param names (param1, param2, ...)
+        final String genericParamName = GENERIC_NAME_PREFIX + String.valueOf(i + 1);
+        // ensure not to overwrite parameter named with @Param
+        if (!names.containsValue(genericParamName)) {
+          param.put(genericParamName, args[entry.getKey()]);
+        }
+        i++;
+      }
+      return param;
+    }
+  }</code></pre>
+<h3 id="update核心方法"><a href="#update核心方法" class="headerlink" title="update核心方法"></a>update核心方法</h3><p>不管<code>command.getType()</code>是<code>INSERT、UPDATE、DELETE</code>中的哪一种，最终都是调用<code>org.apache.ibatis.session.defaults.DefaultSqlSession#update</code>方法执行。</p>
+<pre><code>  public int insert(String statement) {
+    return insert(statement, null);
+  }
+
+  @Override
+  public int insert(String statement, Object parameter) {
+    return update(statement, parameter);
+  }
+
+  @Override
+  public int update(String statement) {
+    return update(statement, null);
+  }
+
+  @Override
+  public int update(String statement, Object parameter) {
+    try {
+      dirty = true;
+      // 根据statement获取MappedStatement
+      // statement：namespace + &quot;.&quot; + sql的id，例：
+      // com.springboot.springbootmybatis.dao.UserDAO.insert
+      MappedStatement ms = configuration.getMappedStatement(statement);
+
+      // 调用org.apache.ibatis.executor.CachingExecutor#update方法，其实最终会委托给org.apache.ibatis.executor.BaseExecutor#update方法执行
+      return executor.update(ms, wrapCollection(parameter));
+      /**
+      * org.apache.ibatis.executor.BaseExecutor#update
+      * public int update(MappedStatement ms, Object parameter) throws SQLException {
+      *     ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing an update&quot;).object(ms.getId());
+      *     if (closed) {
+      *         throw new ExecutorException(&quot;Executor was closed.&quot;);
+      *     }
+      *     clearLocalCache();
+      *     return doUpdate(ms, parameter);
+      * }
+      * 
+      * 先前的ExecutorType是SIMPLE，所以调用的是
+      * org.apache.ibatis.executor.SimpleExecutor#doUpdate 方法
+      * public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+      *     Statement stmt = null;
+      *     try {
+      *         Configuration configuration = ms.getConfiguration();
+      *         
+      *         // 获取执行的handle
+      *         StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
+      *         /**
+      *         * org.apache.ibatis.session.Configuration#newStatementHandler
+      *         * public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+      *         *     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+      *         *     // 执行自定义插件
+      *         *     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+      *         *     return statementHandler;
+      *         * }
+      *         */
+      *
+      *         // 这里返回的stmt是org.apache.ibatis.logging.jdbc.PreparedStatementLogger类型
+      *         stmt = prepareStatement(handler, ms.getStatementLog());
+      *         /**
+      *         *
+      *         * private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+      *         *     Statement stmt;
+      *         *     Connection connection = getConnection(statementLog);
+      *         *     stmt = handler.prepare(connection, transaction.getTimeout());
+      *         *     handler.parameterize(stmt);
+      *         *     return stmt;
+      *         * }
+      *         *
+      *         */
+      *
+      *         // 调用org.apache.ibatis.executor.statement.RoutingStatementHandler#update方法执行update
+      *         // 最终会委托给org.apache.ibatis.executor.statement.PreparedStatementHandler#update执行
+      *         return handler.update(stmt);
+      *         /**
+      *         * PreparedStatementHandler#update：
+      *         * public int update(Statement statement) throws SQLException {
+      *         *     // 是不是很熟悉，很熟悉就对了
+      *         *     PreparedStatement ps = (PreparedStatement) statement;
+      *         *     ps.execute();
+      *         *     int rows = ps.getUpdateCount();
+      *         *     Object parameterObject = boundSql.getParameterObject();
+      *         *     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+      *         *     keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
+      *         *     return rows;
+      *         * }
+      *         *
+      *         */
+      *     } finally {
+      *         closeStatement(stmt);
+      *     }
+      * }
+      * 
+      */
+    } catch (Exception e) {
+      throw ExceptionFactory.wrapException(&quot;Error updating database.  Cause: &quot; + e, e);
+    } finally {
+      ErrorContext.instance().reset();
+    }
+  }
+
+  @Override
+  public int delete(String statement) {
+    return update(statement, null);
+  }
+
+  @Override
+  public int delete(String statement, Object parameter) {
+    return update(statement, parameter);
+  }</code></pre><h3 id="rowCountResult-…"><a href="#rowCountResult-…" class="headerlink" title="rowCountResult(…)"></a>rowCountResult(…)</h3><p>对执行的结果集进行封装org.apache.ibatis.binding.MapperMethod#rowCountResult：</p>
+<pre><code class="rowCountResult(...)">  // 根据返回值类型，封装结果
+  private Object rowCountResult(int rowCount) {
+    final Object result;
+    if (method.returnsVoid()) {
+      result = null;
+    } else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
+      result = rowCount;
+    } else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
+      result = (long)rowCount;
+    } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
+      result = rowCount &gt; 0;
+    } else {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
+    }
+    return result;
+  }</code></pre>
+<h2 id="SELECT"><a href="#SELECT" class="headerlink" title="SELECT"></a>SELECT</h2><pre><code class="execute(...)">  public Object execute(SqlSession sqlSession, Object[] args) {
+    Object result;
+    switch (command.getType()) {
+      ......
+      case SELECT:
+        // 根据返回值类型，决定调用哪一个查询方法
+        // 无返回值时执行
+        if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
+          executeWithResultHandler(sqlSession, args);
+          result = null;
+        // 返回多条数据时即List类型结果时执行
+        } else if (method.returnsMany()) {
+          result = executeForMany(sqlSession, args);
+        // 结果类型是一个Map时执行
+        } else if (method.returnsMap()) {
+          result = executeForMap(sqlSession, args);
+        // 暂时不讨论
+        } else if (method.returnsCursor()) {
+          result = executeForCursor(sqlSession, args);
+        } else {
+          // 其他情况时执行，例：返回的结果是User
+          Object param = method.convertArgsToSqlCommandParam(args);
+          result = sqlSession.selectOne(command.getName(), param);
+          if (method.returnsOptional()
+              &amp;&amp; (result == null || !method.getReturnType().equals(result.getClass()))) {
+            result = Optional.ofNullable(result);
+          }
+        }
+        break;
+        ......
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName()
+          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    return result;
+  }</code></pre>
+<h3 id="executeWithResultHandler-sqlSession-args"><a href="#executeWithResultHandler-sqlSession-args" class="headerlink" title="executeWithResultHandler(sqlSession, args)"></a>executeWithResultHandler(sqlSession, args)</h3><pre><code class="executeWithResultHandler(sqlSession,">  private void executeWithResultHandler(SqlSession sqlSession, Object[] args) {
+    // 根据command.getName()即statementId获取MappedStatement
+    MappedStatement ms = sqlSession.getConfiguration().getMappedStatement(command.getName());
+    if (!StatementType.CALLABLE.equals(ms.getStatementType())
+        &amp;&amp; void.class.equals(ms.getResultMaps().get(0).getType())) {
+      throw new BindingException(&quot;method &quot; + command.getName()
+          + &quot; needs either a @ResultMap annotation, a @ResultType annotation,&quot;
+          + &quot; or a resultType attribute in XML so a ResultHandler can be used as a parameter.&quot;);
+    }
+    // 占位符参数转换
+    Object param = method.convertArgsToSqlCommandParam(args);
+    if (method.hasRowBounds()) {
+      RowBounds rowBounds = method.extractRowBounds(args);
+      sqlSession.select(command.getName(), param, rowBounds, method.extractResultHandler(args));
+    } else {
+      sqlSession.select(command.getName(), param, method.extractResultHandler(args));
+    }
+  }
+
+  /**
+  * org.apache.ibatis.session.defaults.DefaultSqlSession#select
+  * @Override
+  * public void select(String statement, Object parameter, ResultHandler handler) {
+  *     select(statement, parameter, RowBounds.DEFAULT, handler);
+  * }
+  * @Override
+  * public void select(String statement, ResultHandler handler) {
+  *     select(statement, null, RowBounds.DEFAULT, handler);
+  * }
+  * 
+  * // 最终都会执行到这个select方法
+  * @Override
+  * public void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
+  *     try {
+  *         MappedStatement ms = configuration.getMappedStatement(statement);
+  *         // 执行org.apache.ibatis.executor.BaseExecutor#query
+  *         executor.query(ms, wrapCollection(parameter), rowBounds, handler);
+  *     } catch (Exception e) {
+  *         throw ExceptionFactory.wrapException(&quot;Error querying database.  Cause: &quot; + e, e);
+  *     } finally {
+  *         ErrorContext.instance().reset();
+  *     }
+  * }</code></pre>
+<h3 id="executeForMany-sqlSession-args"><a href="#executeForMany-sqlSession-args" class="headerlink" title="executeForMany(sqlSession, args)"></a>executeForMany(sqlSession, args)</h3><pre><code class="executeForMany(sqlSession,">  private &lt;E&gt; Object executeForMany(SqlSession sqlSession, Object[] args) {
+    List&lt;E&gt; result;
+    Object param = method.convertArgsToSqlCommandParam(args);
+    if (method.hasRowBounds()) {
+      RowBounds rowBounds = method.extractRowBounds(args);
+      result = sqlSession.selectList(command.getName(), param, rowBounds);
+    } else {
+      result = sqlSession.selectList(command.getName(), param);
+    }
+    // 结果集转换
+    // issue #510 Collections &amp; arrays support
+    if (!method.getReturnType().isAssignableFrom(result.getClass())) {
+      if (method.getReturnType().isArray()) {
+        return convertToArray(result);
+      } else {
+        return convertToDeclaredCollection(sqlSession.getConfiguration(), result);
+      }
+    }
+    return result;
+  }
+
+  /**
+  * org.apache.ibatis.session.defaults.DefaultSqlSession#selectList
+  * @Override
+  * public &lt;E&gt; List&lt;E&gt; selectList(String statement) {
+  *     return this.selectList(statement, null);
+  * }
+  * @Override
+  * public &lt;E&gt; List&lt;E&gt; selectList(String statement, Object parameter) {
+  *     return this.selectList(statement, parameter, RowBounds.DEFAULT);
+  * }
+  * 
+  * // 最终都会执行到这个selectList方法
+  * @Override
+  * public &lt;E&gt; List&lt;E&gt; selectList(String statement, Object parameter, RowBounds rowBounds) {
+  *     try {
+  *         MappedStatement ms = configuration.getMappedStatement(statement);
+  *         // 执行org.apache.ibatis.executor.BaseExecutor#query
+  *         return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
+  *     } catch (Exception e) {
+  *         throw ExceptionFactory.wrapException(&quot;Error querying database.  Cause: &quot; + e, e);
+  *     } finally {
+  *         ErrorContext.instance().reset();
+  *     }
+  * }
+  */</code></pre>
+<h3 id="executeForMap-sqlSession-args"><a href="#executeForMap-sqlSession-args" class="headerlink" title="executeForMap(sqlSession, args)"></a>executeForMap(sqlSession, args)</h3><pre><code class="executeForMap(sqlSession,">  private &lt;K, V&gt; Map&lt;K, V&gt; executeForMap(SqlSession sqlSession, Object[] args) {
+    Map&lt;K, V&gt; result;
+    Object param = method.convertArgsToSqlCommandParam(args);
+    if (method.hasRowBounds()) {
+      RowBounds rowBounds = method.extractRowBounds(args);
+      result = sqlSession.selectMap(command.getName(), param, method.getMapKey(), rowBounds);
+    } else {
+      result = sqlSession.selectMap(command.getName(), param, method.getMapKey());
+    }
+    return result;
+  }
+
+  /**
+  * org.apache.ibatis.session.defaults.DefaultSqlSession#selectMap
+  * @Override
+  * public &lt;K, V&gt; Map&lt;K, V&gt; selectMap(String statement, String mapKey) {
+  *     return this.selectMap(statement, null, mapKey, RowBounds.DEFAULT);
+  * }
+  * @Override
+  * public &lt;K, V&gt; Map&lt;K, V&gt; selectMap(String statement, Object parameter, String mapKey) {
+  *     return this.selectMap(statement, parameter, mapKey, RowBounds.DEFAULT);
+  * }
+  * 
+  * // 最终都会执行到这个selectMap方法
+  * @Override
+  * public &lt;K, V&gt; Map&lt;K, V&gt; selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
+  *     // 首先执行selectList查询
+  *     final List&lt;? extends V&gt; list = selectList(statement, parameter, rowBounds);
+  *     // 将list结果集转换成Map&lt;K, V&gt;
+  *     final DefaultMapResultHandler&lt;K, V&gt; mapResultHandler = new DefaultMapResultHandler&lt;&gt;(mapKey,
+            configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+  *     final DefaultResultContext&lt;V&gt; context = new DefaultResultContext&lt;&gt;();
+  *     for (V o : list) {
+  *         context.nextResultObject(o);
+  *         // 将结果集以key，value的形式放到org.apache.ibatis.executor.result.DefaultMapResultHandler#mappedResults Map集合中
+  *         mapResultHandler.handleResult(context);
+  *     }
+  *     return mapResultHandler.getMappedResults();
+  * }
+  *
+  */</code></pre>
+<h3 id="selectOne-command-getName-param"><a href="#selectOne-command-getName-param" class="headerlink" title="selectOne(command.getName(), param)"></a>selectOne(command.getName(), param)</h3><pre><code class="selectOne(command.getName(),">  @Override
+  public &lt;T&gt; T selectOne(String statement) {
+    return this.selectOne(statement, null);
+  }
+
+  @Override
+  public &lt;T&gt; T selectOne(String statement, Object parameter) {
+    // Popular vote was to return null on 0 results and throw exception on too many.
+    // 执行selectList查询，获取返回结果集的一个元素
+    List&lt;T&gt; list = this.selectList(statement, parameter);
+    if (list.size() == 1) {
+      return list.get(0);
+    } else if (list.size() &gt; 1) {
+      throw new TooManyResultsException(&quot;Expected one result (or null) to be returned by selectOne(), but found: &quot; + list.size());
+    } else {
+      return null;
+    }
+  }</code></pre>
+<h3 id="executor-query-…"><a href="#executor-query-…" class="headerlink" title="executor.query(…)"></a>executor.query(…)</h3><p>首先调用org.apache.ibatis.executor.CachingExecutor#query进行缓存管理：</p>
+<pre><code class="CachingExecutor#query">  public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    BoundSql boundSql = ms.getBoundSql(parameterObject);
+    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
+    return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+  }
+  // 缓存管理
+  public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
+      throws SQLException {
+    Cache cache = ms.getCache();
+    if (cache != null) {
+      flushCacheIfRequired(ms);
+      if (ms.isUseCache() &amp;&amp; resultHandler == null) {
+        ensureNoOutParams(ms, boundSql);
+        @SuppressWarnings(&quot;unchecked&quot;)
+        List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);
+        if (list == null) {
+          // 委托给org.apache.ibatis.executor.BaseExecutor#query
+          list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          tcm.putObject(cache, key, list); // issue #578 and #116
+        }
+        return list;
+      }
+    }
+    // 委托给org.apache.ibatis.executor.BaseExecutor#query
+    return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+  }</code></pre>
+<p>最终库查询调用委托给org.apache.ibatis.executor.BaseExecutor#query</p>
+<pre><code class="executor.query(...)">  // select以及selectList都会执行这个方法，只不过最后一个参数不一样
+  // select：ResultHandler handler
+  // selectList：Executor.NO_RESULT_HANDLER
+  public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    BoundSql boundSql = ms.getBoundSql(parameter);
+    // 构造缓存key，例：
+    // -849388093:2205047678:com.springboot.springbootmybatis.dao.UserDAO.selectUser:0:2147483647:select ID, USER_ID, NAME, EMAIL, CREATED_TIME, MODIFIED_TIME from USER where id = ?:5:development
+    // 第一个：hashCode，第二个：类似于一个验证码
+    // 第三个：sql语句，第四个：sql语句参数
+    // 第五个：环境id
+    CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+    return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
+  }
+
+  public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing a query&quot;).object(ms.getId());
+    if (closed) {
+      throw new ExecutorException(&quot;Executor was closed.&quot;);
+    }
+    if (queryStack == 0 &amp;&amp; ms.isFlushCacheRequired()) {
+      clearLocalCache();
+    }
+    List&lt;E&gt; list;
+    try {
+      queryStack++;
+      // 从缓存查询
+      list = resultHandler == null ? (List&lt;E&gt;) localCache.getObject(key) : null;
+      // 缓存有数据直接返回
+      if (list != null) {
+        handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
+      } else {
+        // 查询DB
+        list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+      }
+    } finally {
+      queryStack--;
+    }
+    if (queryStack == 0) {
+      for (DeferredLoad deferredLoad : deferredLoads) {
+        deferredLoad.load();
+      }
+      // issue #601
+      deferredLoads.clear();
+      if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+        // issue #482
+        clearLocalCache();
+      }
+    }
+    return list;
+  }
+
+  private &lt;E&gt; List&lt;E&gt; queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+    List&lt;E&gt; list;
+    localCache.putObject(key, EXECUTION_PLACEHOLDER);
+    try {
+      // 查询数据
+      list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
+    } finally {
+      localCache.removeObject(key);
+    }
+    // 缓存数据
+    localCache.putObject(key, list);
+    if (ms.getStatementType() == StatementType.CALLABLE) {
+      localOutputParameterCache.putObject(key, parameter);
+    }
+    return list;
+  }
+
+  // 以下操作就和update差不多啦
+  // 调用org.apache.ibatis.executor.SimpleExecutor#doQuery
+  public &lt;E&gt; List&lt;E&gt; doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    Statement stmt = null;
+    try {
+      Configuration configuration = ms.getConfiguration();
+      // 获取到一个RoutingStatementHandler实例
+      StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+      // 获取到一个org.apache.ibatis.logging.jdbc.PreparedStatementLogger实例
+      stmt = prepareStatement(handler, ms.getStatementLog());
+      // 调用RoutingStatementHandler的query方法，其实最终还是委托给了
+      // org.apache.ibatis.executor.statement.PreparedStatementHandler#query
+      return handler.query(stmt, resultHandler);
+    } finally {
+      closeStatement(stmt);
+    }
+  }
+
+  // 调用org.apache.ibatis.executor.statement.PreparedStatementHandler#query
+  public &lt;E&gt; List&lt;E&gt; query(Statement statement, ResultHandler resultHandler) throws SQLException {
+    // 很熟悉的操作
+    PreparedStatement ps = (PreparedStatement) statement;
+    ps.execute();
+    return resultSetHandler.handleResultSets(ps);
+  }
+
+  // 调用org.apache.ibatis.executor.resultset.DefaultResultSetHandler#handleResultSets进行结果集处理
+  public List&lt;Object&gt; handleResultSets(Statement stmt) throws SQLException {
+    ErrorContext.instance().activity(&quot;handling results&quot;).object(mappedStatement.getId());
+
+    final List&lt;Object&gt; multipleResults = new ArrayList&lt;&gt;();
+
+    int resultSetCount = 0;
+    ResultSetWrapper rsw = getFirstResultSet(stmt);
+    List&lt;ResultMap&gt; resultMaps = mappedStatement.getResultMaps();
+    int resultMapCount = resultMaps.size();
+    validateResultMapsCount(rsw, resultMapCount);
+    while (rsw != null &amp;&amp; resultMapCount &gt; resultSetCount) {
+      ResultMap resultMap = resultMaps.get(resultSetCount);
+      // 到这里处理结果集，将处理结果放到multipleResults集合中
+      handleResultSet(rsw, resultMap, multipleResults, null);
+      rsw = getNextResultSet(stmt);
+      cleanUpAfterHandlingResultSet();
+      resultSetCount++;
+    }
+
+    String[] resultSets = mappedStatement.getResultSets();
+    if (resultSets != null) {
+      while (rsw != null &amp;&amp; resultSetCount &lt; resultSets.length) {
+        ResultMapping parentMapping = nextResultMaps.get(resultSets[resultSetCount]);
+        if (parentMapping != null) {
+          String nestedResultMapId = parentMapping.getNestedResultMapId();
+          ResultMap resultMap = configuration.getResultMap(nestedResultMapId);
+          handleResultSet(rsw, resultMap, null, parentMapping);
+        }
+        rsw = getNextResultSet(stmt);
+        cleanUpAfterHandlingResultSet();
+        resultSetCount++;
+      }
+    }
+
+    return collapseSingleResultList(multipleResults);
+  }
+</code></pre>
+<h2 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h2><ul>
+<li><p><code>Mapper</code>的执行实际上是调用了获取到的<code>MapperProxy</code>实例的<code>invoke</code>方法</p>
+</li>
+<li><p>在<code>invoke</code>方法中构造<code>MapperMethod</code>实例后，调用它的<code>execute</code>方法</p>
+</li>
+<li><p>在<code>execute</code>方法中根据<code>command.getType()</code>类型选择相应的方法调用，可以分为两类</p>
+<ul>
+<li><p>INSERT、UPDATE、DETETE</p>
+<ul>
+<li>三个操作汇总调用<code>org.apache.ibatis.session.defaults.DefaultSqlSession#update</code>方法执行</li>
+<li>然后调用<code>org.apache.ibatis.executor.CachingExecutor#update</code></li>
+<li>再将执行委托给<code>org.apache.ibatis.executor.BaseExecutor#update</code>执行</li>
+<li>再调用<code>org.apache.ibatis.executor.SimpleExecutor#doUpdate</code></li>
+<li>然后调用<code>org.apache.ibatis.executor.statement.PreparedStatementHandler#update</code>执行获取结果</li>
+<li>最后调用<code>org.apache.ibatis.binding.MapperMethod#rowCountResult</code>处理结果返回</li>
+</ul>
+</li>
+<li><p>SELECT</p>
+<ul>
+<li><code>executeWithResultHandler</code> 后面调用<code>org.apache.ibatis.session.defaults.DefaultSqlSession#select</code>执行</li>
+<li><code>executeForMany</code>、<code>executeForMap</code>、<code>selectOne</code> 都是调用<code>org.apache.ibatis.session.defaults.DefaultSqlSession#selectList</code>执行</li>
+<li>以上两步最后都是调用<code>org.apache.ibatis.executor.CachingExecutor#query</code></li>
+<li>然后委托给<code>org.apache.ibatis.executor.BaseExecutor#query</code>执行</li>
+<li>再调用<code>org.apache.ibatis.executor.SimpleExecutor#doQuery</code>方法</li>
+<li>然后调用<code>org.apache.ibatis.executor.statement.PreparedStatementHandler#query</code></li>
+<li>最后调用<code>org.apache.ibatis.executor.resultset.DefaultResultSetHandler#handleResultSets</code>处理结果集返回</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>再来张<code>Executor</code>的图看看，对其中<code>xxxExecutor</code>的调用关系就更清楚了：<br><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/crud-executor.jpg" alt></p>
+
+        </div>
+        <!-- .entry-content -->
+        <div class="single-reward">
+          <div class="reward-open">赏<div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/alipay.jpg"></li>
+                <li class="wechat-code"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/donate/wechat.jpg"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+        
+          
+            <div class="post-nepre full next">
+          
+            <a href="/2019/11/04/tech-mybatis-mapper/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/loader/cup.gif" data-src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mapper.jpeg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/article/tech/mybatis/mapper.jpeg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                MyBatis源码分析之Mapper</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+<!--
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz",
+        appKey: "mgOpfzbkHYqU92CV4IDlAUHQ",
+        path: window.location.pathname,
+        placeholder: "你是我一生只会遇见一次的惊喜 ..."
+      })
+  }
+</script>
+
+-->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg" itemprop="image" alt="多多" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">多多</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>一个好奇的人</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+
+
+    </div>    
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 duoduo<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/other/disqus-preloader.svg">
+      </div>
+<!-- 
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse"></i>
+        duoduo's litter house
+      </p>
+ -->
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+<!--
+         <span style="color: #b9b9b9;">
+           <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block" ></i>
+         </span>
+-->
+         <span style="color: #b9b9b9;">
+           <a target="_blank" rel="nofollow" href="https://github.com/bruceting"><i class="fa fa-github" style="/* color: #ffc0cb; */display:inline-block;font-size: x-large;"></i></a>
+         </span>
+
+      <p style="color: #666666;">&copy 2019
+        <i class="fa fa-heart animated infinite pulse" style="color: #e74c3c;"></i>
+        duoduo's litter house
+      </p>
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="fa fa-snowflake-o rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>
+        </span>
+<!--        <span style="color: #b9b9b9;">Powered by Hexo</span>
+-->
+<!--
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Hosted by Coding Pages</a>
+        </span>
+ -->
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"1","movies":{"url": "https://cdn.jsdelivr.net/gh/honjun/hojun@1.2","name":"Unbroken.mp4","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+
+<!-- live2d -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/bruceting/live2d-widget/autoload.js"></script> -->
+
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://cdn.jsdelivr.net/gh/bruceting/blogcdn/img/base/avatar.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">たくさん</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+      
+        <a href="http://github.com/BruceTing" class="fa fa-github" target="_blank" style="color: #333; margin-left:20px"></a>
+      
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=954655431&site=qq&menu=yes" class="fa fa-qq" target="_blank" style="color: #25c6fe; margin-left:20px"></a>
+      
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/tech/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  技术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/life/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/thought/">
+                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                  随想
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/source/">
+                  <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                  资源
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/reprint/">
+                  <i class="fa fa-book" aria-hidden="true"></i>
+                  转载
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我？
+                </a>
+              </li>
+            
+              <li>
+                <a href="/atom.xml">
+                  <i class="fa fa-rss faa-pulse" aria-hidden="true"></i>
+                  RSS
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019 hexo-sakura</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js"></script>
+<style>
+  .aplayer .aplayer-lrc {
+    height: 35px;
+  }
+  .aplayer .aplayer-lrc p{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18px !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: #FF1493;
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    left: -66px !important;
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer .aplayer-lrc.aplayer-lrc-hide {
+      display:none !important;
+  }
+  .aplayer.aplayer-fixed .lrc-show {
+    display: block;
+    background: rgba(255, 255, 255, 0.8);
+  }
+</style>
+<div class="aplayer"
+
+    data-id="2660651585"
+
+    data-server="netease"
+
+    data-type="playlist"
+
+    data-fixed="true"
+
+    data-autoplay="false"
+
+    data-loop="all"
+
+    data-order="random"
+
+    data-preload="auto"
+
+    data-volume="0.7"
+
+    data-mutex="true"
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/meting@1.2/dist/Meting.min.js"></script>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-button').hasClass('aplayer-play')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } else {
+        $('.aplayer-lrc').addClass('lrc-show');
+      }
+    })
+  });
+</script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/haru01.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
